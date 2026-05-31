@@ -1,0 +1,144 @@
+<svg width="1280" height="720" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg" font-family="'Courier New', Courier, monospace">
+
+  <!-- Background -->
+  <rect width="1280" height="720" fill="#FFD700"/>
+
+  <!-- ─── HEADER STRIP ─── -->
+  <rect x="0" y="0" width="1280" height="96" fill="#000"/>
+
+  <!-- Logo (unchanged) -->
+  <rect x="48" y="16" width="64" height="64" fill="#FFD700" stroke="#FFD700" stroke-width="0"/>
+  <rect x="60" y="28" width="64" height="64" fill="#000" stroke="#FFD700" stroke-width="3"/>
+  <text x="67" y="71" font-size="26" font-weight="900" fill="#FFD700" letter-spacing="1">SVG</text>
+  <!-- yellow square on top -->
+  <rect x="48" y="16" width="64" height="64" fill="none" stroke="#000" stroke-width="0"/>
+  <rect x="48" y="16" width="64" height="64" fill="#FFD700"/>
+  <text x="55" y="59" font-size="26" font-weight="900" fill="#000" letter-spacing="1">SVG</text>
+  <!-- black square offset -->
+  <rect x="62" y="30" width="64" height="64" fill="#000"/>
+  <text x="69" y="73" font-size="26" font-weight="900" fill="#FFD700" letter-spacing="1">SVG</text>
+
+  <!-- Brand name in header -->
+  <text x="152" y="63" font-size="38" font-weight="900" fill="#FFD700">GetSVG</text>
+
+  <!-- Domain in header -->
+  <text x="1232" y="63" font-size="16" font-weight="700" fill="#555" text-anchor="end" letter-spacing="1">getsvg.xyz</text>
+
+  <!-- ─── MAIN CONTENT ─── -->
+
+  <!-- BIG HEADING -->
+  <text x="64" y="210" font-size="96" font-weight="900" fill="#000" letter-spacing="-2">The fastest way</text>
+
+  <!-- "to" + inverted "steal" + " —" -->
+  <text x="64" y="318" font-size="96" font-weight="900" fill="#000" letter-spacing="-2">to </text>
+  <rect x="238" y="234" width="330" height="100" fill="#000"/>
+  <text x="248" y="318" font-size="96" font-weight="900" fill="#FFD700" letter-spacing="-2">steal</text>
+  <text x="576" y="318" font-size="96" font-weight="900" fill="#000" letter-spacing="-2"> —</text>
+
+  <text x="64" y="426" font-size="96" font-weight="900" fill="#000" letter-spacing="-2">legally.</text>
+
+  <!-- ─── BULLETS ─── -->
+  <!-- bullet 1 -->
+  <rect x="64" y="490" width="32" height="5" fill="#000"/>
+  <text x="112" y="510" font-size="24" font-weight="700" fill="#000">Right-click. Copy SVG. Move on.</text>
+
+  <!-- bullet 2 -->
+  <rect x="64" y="542" width="32" height="5" fill="#000"/>
+  <text x="112" y="562" font-size="24" font-weight="700" fill="#000">1-click SVG highlighter, extractor, download all</text>
+
+  <!-- bullet 3 -->
+  <rect x="64" y="594" width="32" height="5" fill="#000"/>
+  <text x="112" y="614" font-size="24" font-weight="700" fill="#000">SVGO — get optimised and clean SVG files</text>
+
+  <!-- ─── RIGHT: MOCK UI PANEL ─── -->
+  <!-- Panel container -->
+  <rect x="880" y="116" width="364" height="566" fill="#000"/>
+
+  <!-- Panel header -->
+  <rect x="880" y="116" width="364" height="54" fill="#FFD700"/>
+  <text x="898" y="152" font-size="18" font-weight="900" fill="#000">GetSVG</text>
+  <rect x="1060" y="126" width="168" height="28" fill="#000"/>
+  <text x="1072" y="145" font-size="11" font-weight="900" fill="#FFD700" letter-spacing="0.5">48 SVGs FOUND</text>
+
+  <!-- Button row -->
+  <rect x="880" y="170" width="182" height="44" fill="#FFD700"/>
+  <text x="898" y="198" font-size="12" font-weight="900" fill="#000" letter-spacing="0.3">HIGHLIGHT ALL</text>
+  <rect x="1062" y="170" width="182" height="44" fill="#1a1a1a"/>
+  <text x="1076" y="198" font-size="12" font-weight="900" fill="#555" letter-spacing="0.3">DOWNLOAD ALL 🔒</text>
+  <line x1="880" y1="214" x2="1244" y2="214" stroke="#FFD700" stroke-width="2"/>
+  <line x1="1062" y1="170" x2="1062" y2="214" stroke="#FFD700" stroke-width="2"/>
+
+  <!-- SVG item rows -->
+  <!-- ── Row 1 ── -->
+  <rect x="892" y="226" width="44" height="44" fill="#111" stroke="#FFD700" stroke-width="1.5"/>
+  <line x1="904" y1="237" x2="924" y2="257" stroke="#FFD700" stroke-width="2.5"/>
+  <line x1="924" y1="237" x2="904" y2="257" stroke="#FFD700" stroke-width="2.5"/>
+  <rect x="946" y="228" width="52" height="16" fill="#FFD700"/>
+  <text x="950" y="240" font-size="9" font-weight="900" fill="#000">INLINE</text>
+  <text x="946" y="262" font-size="11" font-weight="700" fill="#666">16×16px</text>
+  <rect x="1148" y="228" width="80" height="19" fill="#FFD700"/>
+  <text x="1172" y="242" font-size="11" font-weight="900" fill="#000" text-anchor="middle">COPY</text>
+  <rect x="1148" y="251" width="80" height="19" fill="#000" stroke="#FFD700" stroke-width="1.5"/>
+  <text x="1172" y="265" font-size="11" font-weight="900" fill="#FFD700" text-anchor="middle">↓ SAVE</text>
+  <line x1="880" y1="280" x2="1244" y2="280" stroke="#333" stroke-width="1.5"/>
+
+  <!-- ── Row 2 ── -->
+  <rect x="892" y="292" width="44" height="44" fill="#111" stroke="#FFD700" stroke-width="1.5"/>
+  <rect x="900" y="303" width="28" height="3" fill="#FFD700"/>
+  <rect x="900" y="311" width="28" height="3" fill="#FFD700"/>
+  <rect x="900" y="319" width="28" height="3" fill="#FFD700"/>
+  <rect x="946" y="294" width="52" height="16" fill="#FFD700"/>
+  <text x="950" y="306" font-size="9" font-weight="900" fill="#000">INLINE</text>
+  <text x="946" y="328" font-size="11" font-weight="700" fill="#666">20×20px</text>
+  <rect x="1148" y="294" width="80" height="19" fill="#FFD700"/>
+  <text x="1172" y="308" font-size="11" font-weight="900" fill="#000" text-anchor="middle">COPY</text>
+  <rect x="1148" y="317" width="80" height="19" fill="#000" stroke="#FFD700" stroke-width="1.5"/>
+  <text x="1172" y="331" font-size="11" font-weight="900" fill="#FFD700" text-anchor="middle">↓ SAVE</text>
+  <line x1="880" y1="346" x2="1244" y2="346" stroke="#333" stroke-width="1.5"/>
+
+  <!-- ── Row 3 ── -->
+  <rect x="892" y="358" width="44" height="44" fill="#111" stroke="#FFD700" stroke-width="1.5"/>
+  <polygon points="914,362 893,376 893,402 905,402 905,388 923,388 923,402 935,402 935,376" fill="#FFD700"/>
+  <rect x="946" y="360" width="52" height="16" fill="#FFD700"/>
+  <text x="950" y="372" font-size="9" font-weight="900" fill="#000">INLINE</text>
+  <text x="946" y="394" font-size="11" font-weight="700" fill="#666">20×20px</text>
+  <rect x="1148" y="360" width="80" height="19" fill="#FFD700"/>
+  <text x="1172" y="374" font-size="11" font-weight="900" fill="#000" text-anchor="middle">COPY</text>
+  <rect x="1148" y="383" width="80" height="19" fill="#000" stroke="#FFD700" stroke-width="1.5"/>
+  <text x="1172" y="397" font-size="11" font-weight="900" fill="#FFD700" text-anchor="middle">↓ SAVE</text>
+  <line x1="880" y1="412" x2="1244" y2="412" stroke="#333" stroke-width="1.5"/>
+
+  <!-- ── Row 4 ── -->
+  <rect x="892" y="424" width="44" height="44" fill="#111" stroke="#FFD700" stroke-width="1.5"/>
+  <path d="M896 432 L900 432 L906 454 L924 454 L928 440 L902 440" fill="none" stroke="#FFD700" stroke-width="2"/>
+  <circle cx="908" cy="458" r="3" fill="#FFD700"/>
+  <circle cx="922" cy="458" r="3" fill="#FFD700"/>
+  <rect x="946" y="426" width="52" height="16" fill="#FFD700"/>
+  <text x="950" y="438" font-size="9" font-weight="900" fill="#000">INLINE</text>
+  <text x="946" y="460" font-size="11" font-weight="700" fill="#666">20×20px</text>
+  <rect x="1148" y="426" width="80" height="19" fill="#FFD700"/>
+  <text x="1172" y="440" font-size="11" font-weight="900" fill="#000" text-anchor="middle">COPY</text>
+  <rect x="1148" y="449" width="80" height="19" fill="#000" stroke="#FFD700" stroke-width="1.5"/>
+  <text x="1172" y="463" font-size="11" font-weight="900" fill="#FFD700" text-anchor="middle">↓ SAVE</text>
+  <line x1="880" y1="478" x2="1244" y2="478" stroke="#333" stroke-width="1.5"/>
+
+  <!-- ── Row 5 ── -->
+  <rect x="892" y="490" width="44" height="44" fill="#111" stroke="#FFD700" stroke-width="1.5"/>
+  <!-- heart icon -->
+  <path d="M914,498 C914,498 906,493 904,499 C902,505 908,510 914,516 C920,510 926,505 924,499 C922,493 914,498 914,498Z" fill="#FFD700"/>
+  <rect x="946" y="492" width="52" height="16" fill="#FFD700"/>
+  <text x="950" y="504" font-size="9" font-weight="900" fill="#000">INLINE</text>
+  <text x="946" y="526" font-size="11" font-weight="700" fill="#666">20×20px</text>
+  <rect x="1148" y="492" width="80" height="19" fill="#FFD700"/>
+  <text x="1172" y="506" font-size="11" font-weight="900" fill="#000" text-anchor="middle">COPY</text>
+  <rect x="1148" y="515" width="80" height="19" fill="#000" stroke="#FFD700" stroke-width="1.5"/>
+  <text x="1172" y="529" font-size="11" font-weight="900" fill="#FFD700" text-anchor="middle">↓ SAVE</text>
+
+  <!-- CTA -->
+  <rect x="880" y="614" width="364" height="54" fill="#FFD700"/>
+  <text x="1062" y="648" font-size="16" font-weight="900" fill="#000" text-anchor="middle" letter-spacing="2">FREE CHROME EXTENSION</text>
+
+  <!-- Vertical divider line -->
+  <line x1="876" y1="96" x2="876" y2="720" stroke="#000" stroke-width="4"/>
+
+</svg>

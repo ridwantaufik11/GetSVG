@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GetSVG — SVG Grabber & Downloader for Chrome</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --yellow: #FFD400;
+      --black: #000;
+      --white: #fff;
+      --gray: #f5f5f0;
+      --border: 3px solid #000;
+      --shadow: 5px 5px 0 #000;
+      --shadow-lg: 8px 8px 0 #000;
+      --radius: 0px;
+      --font: 'Inter', system-ui, sans-serif;
+      --font-display: 'Courier New', Courier, monospace;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font);
+      background: var(--white);
+      color: var(--black);
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    h1, h2, h3, h4, h5, h6, .btn, .nav-cta, .section-title, .about-link, .support-actions .btn, .nav-logo, .foot-logo {
+      font-family: var(--font-display);
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--black);
+      border-bottom: var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 32px;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 900;
+      font-size: 20px;
+      letter-spacing: -0.5px;
+      color: var(--yellow);
+    }
+
+    .nav-logo svg { width: 36px; height: 36px; }
+
+    .nav-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--yellow);
+      color: var(--black);
+      font-weight: 800;
+      font-size: 14px;
+      padding: 10px 20px;
+      border: var(--border);
+      box-shadow: 3px 3px 0 var(--yellow);
+      cursor: pointer;
+      transition: transform 0.08s, box-shadow 0.08s;
+    }
+
+    .nav-cta:hover { transform: translate(2px, 2px); box-shadow: 1px 1px 0 #FFD400; }
+
+    /* ── HERO ── */
+    .hero {
+      background: var(--yellow);
+      border-bottom: var(--border);
+      padding: 80px 32px 60px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .hero-text h1 {
+      font-size: clamp(2.4rem, 5vw, 3.8rem);
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -1px;
+      margin-bottom: 20px;
+    }
+
+    .hero-text h1 span {
+      background: var(--black);
+      color: var(--yellow);
+      padding: 0 6px;
+    }
+
+    .hero-text p {
+      font-size: 1.1rem;
+      font-weight: 500;
+      max-width: 440px;
+      margin-bottom: 32px;
+      line-height: 1.6;
+    }
+
+    .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 800;
+      font-size: 15px;
+      padding: 14px 28px;
+      border: var(--border);
+      cursor: pointer;
+      transition: transform 0.08s, box-shadow 0.08s;
+      white-space: nowrap;
+    }
+
+    .btn:active { transform: translate(3px, 3px); box-shadow: 2px 2px 0 #000 !important; }
+
+    .btn-primary {
+      background: var(--black);
+      color: var(--yellow);
+      box-shadow: var(--shadow);
+    }
+
+    .btn-primary:hover { transform: translate(2px, 2px); box-shadow: 3px 3px 0 #000; }
+
+    .btn-outline {
+      background: var(--white);
+      color: var(--black);
+      box-shadow: var(--shadow);
+    }
+
+    .btn-outline:hover { transform: translate(2px, 2px); box-shadow: 3px 3px 0 #000; }
+
+    .hero-visual {
+      position: relative;
+    }
+
+    .hero-mockup {
+      background: var(--black);
+      border: var(--border);
+      box-shadow: var(--shadow-lg);
+      padding: 12px;
+      aspect-ratio: 4/3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .hero-mockup-inner {
+      width: 100%;
+      height: 100%;
+      background: #1a1a1a;
+      border: 2px solid #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+    }
+
+    .popup-preview {
+      background: var(--white);
+      border: 2px solid var(--black);
+      width: 220px;
+      box-shadow: 4px 4px 0 var(--yellow);
+    }
+
+    .popup-header {
+      background: var(--yellow);
+      border-bottom: 2px solid var(--black);
+      padding: 8px 12px;
+      font-weight: 900;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .popup-item {
+      border-bottom: 1px solid #eee;
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .popup-thumb {
+      width: 100%;
+      height: 40px;
+      background: #f0f0f0;
+      border: 1px solid #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .popup-thumb svg { opacity: 0.4; }
+
+    .popup-row {
+      display: flex;
+      gap: 4px;
+    }
+
+    .popup-btn {
+      flex: 1;
+      background: var(--yellow);
+      border: 1.5px solid var(--black);
+      font-size: 9px;
+      font-weight: 800;
+      padding: 4px 2px;
+      text-align: center;
+    }
+
+    .badge-count {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: var(--yellow);
+      border: 2px solid var(--black);
+      font-size: 11px;
+      font-weight: 900;
+      padding: 2px 8px;
+    }
+
+    /* ── SECTION WRAPPER ── */
+    .section {
+      padding: 80px 32px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-full {
+      padding: 80px 32px;
+    }
+
+    .section-label {
+      display: inline-block;
+      background: var(--yellow);
+      border: var(--border);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      line-height: 1.1;
+      margin-bottom: 12px;
+    }
+
+    .section-sub {
+      font-size: 1.05rem;
+      color: #333;
+      max-width: 540px;
+      margin-bottom: 48px;
+    }
+
+    /* ── FEATURES GRID ── */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+    }
+
+    .feature-card {
+      border: var(--border);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      background: var(--white);
+    }
+
+    .feature-media {
+      aspect-ratio: 16/9;
+      background: var(--black);
+      border-bottom: var(--border);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .feature-media-inner {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #111 0%, #222 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .feature-media-label {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0,0,0,0.75);
+      color: var(--yellow);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 6px 12px;
+      text-align: center;
+    }
+
+    /* context menu mockup */
+    .ctx-menu {
+      background: var(--white);
+      border: 2px solid var(--black);
+      box-shadow: 4px 4px 0 var(--yellow);
+      min-width: 170px;
+    }
+
+    .ctx-item {
+      padding: 8px 14px;
+      font-size: 11px;
+      font-weight: 700;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .ctx-item:last-child { border-bottom: none; }
+    .ctx-item.active { background: var(--yellow); }
+
+    .ctx-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--yellow);
+      border: 1.5px solid var(--black);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* svg list mockup */
+    .svg-list {
+      background: var(--white);
+      border: 2px solid var(--black);
+      box-shadow: 4px 4px 0 var(--yellow);
+      width: 220px;
+    }
+
+    .svg-list-header {
+      background: var(--yellow);
+      border-bottom: 2px solid var(--black);
+      padding: 6px 10px;
+      font-size: 11px;
+      font-weight: 900;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .svg-list-count {
+      background: var(--black);
+      color: var(--yellow);
+      font-size: 9px;
+      font-weight: 900;
+      padding: 2px 6px;
+    }
+
+    .svg-list-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .svg-list-thumb {
+      width: 28px;
+      height: 28px;
+      background: #f5f5f5;
+      border: 1px solid #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .svg-list-actions {
+      margin-left: auto;
+      display: flex;
+      gap: 3px;
+    }
+
+    .svg-mini-btn {
+      width: 20px;
+      height: 20px;
+      background: var(--yellow);
+      border: 1.5px solid var(--black);
+      font-size: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* highlight mockup */
+    .highlight-scene {
+      position: relative;
+      width: 220px;
+      height: 130px;
+    }
+
+    .hl-page {
+      position: absolute;
+      inset: 0;
+      background: #fff;
+      border: 2px solid #333;
+      padding: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-content: flex-start;
+    }
+
+    .hl-block { background: #e5e5e5; border-radius: 2px; }
+
+    .hl-overlay {
+      position: absolute;
+      border: 2.5px solid var(--yellow);
+      box-shadow: 0 0 0 2px rgba(255,212,0,0.3);
+    }
+
+    .hl-label {
+      position: absolute;
+      top: -18px;
+      left: 0;
+      background: var(--yellow);
+      border: 1.5px solid var(--black);
+      font-size: 7px;
+      font-weight: 900;
+      padding: 1px 5px;
+      white-space: nowrap;
+    }
+
+    .feature-info {
+      padding: 20px 22px 22px;
+    }
+
+    .feature-info h3 {
+      font-size: 1.15rem;
+      font-weight: 900;
+      margin-bottom: 6px;
+    }
+
+    .feature-info p {
+      font-size: 0.875rem;
+      color: #444;
+      line-height: 1.5;
+    }
+
+    /* ── PRO SECTION ── */
+    .pro-section {
+      background: var(--black);
+      color: var(--white);
+      border-top: var(--border);
+      border-bottom: var(--border);
+    }
+
+    .pro-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 80px 32px;
+    }
+
+    .pro-inner .section-label {
+      background: var(--yellow);
+      color: var(--black);
+    }
+
+    .pro-inner .section-title { color: var(--white); }
+    .pro-inner .section-sub { color: #aaa; }
+
+    .pro-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-bottom: 48px;
+    }
+
+    .pro-card {
+      border: 3px solid #333;
+      background: #111;
+      padding: 28px 24px;
+      position: relative;
+      transition: border-color 0.15s;
+    }
+
+    .pro-card:hover { border-color: var(--yellow); }
+
+    .pro-card-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--yellow);
+      border: 2px solid var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
+    .pro-card h3 {
+      font-size: 1.05rem;
+      font-weight: 900;
+      margin-bottom: 8px;
+      color: var(--white);
+    }
+
+    .pro-card p {
+      font-size: 0.875rem;
+      color: #999;
+      line-height: 1.5;
+    }
+
+    .pro-badge {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: var(--yellow);
+      color: var(--black);
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border: 1.5px solid var(--black);
+    }
+
+    .pro-cta-row {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .pro-price {
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+    }
+
+    .pro-price .amount {
+      font-size: 3rem;
+      font-weight: 900;
+      color: var(--yellow);
+      line-height: 1;
+    }
+
+    .pro-price .period {
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    .btn-pro {
+      background: var(--yellow);
+      color: var(--black);
+      box-shadow: 5px 5px 0 #FFD400aa;
+    }
+
+    .btn-pro:hover { transform: translate(2px, 2px); box-shadow: 3px 3px 0 #FFD400aa; }
+
+    .pro-note {
+      font-size: 0.8rem;
+      color: #aaa;
+      margin-top: 12px;
+    }
+
+    /* ── HOW IT WORKS ── */
+    .how-section {
+      background: var(--gray);
+      border-top: var(--border);
+      border-bottom: var(--border);
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+    }
+
+    .step {
+      padding: 40px 32px;
+      border-right: var(--border);
+      position: relative;
+    }
+
+    .step:last-child { border-right: none; }
+
+    .step-num {
+      width: 52px;
+      height: 52px;
+      background: var(--yellow);
+      border: var(--border);
+      box-shadow: var(--shadow);
+      font-size: 1.5rem;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .step h3 {
+      font-size: 1.15rem;
+      font-weight: 900;
+      margin-bottom: 8px;
+    }
+
+    .step p {
+      font-size: 0.9rem;
+      color: #444;
+      line-height: 1.6;
+    }
+
+    .step-arrow {
+      position: absolute;
+      right: -18px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 34px;
+      height: 34px;
+      background: var(--yellow);
+      border: var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .step-visual {
+      margin-top: 20px;
+      height: 80px;
+      background: var(--white);
+      border: 2px solid var(--black);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #666;
+      gap: 8px;
+    }
+
+    /* ── ABOUT ── */
+    .about-section {
+      background: var(--white);
+    }
+
+    .about-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 80px 32px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+    }
+
+    .about-card {
+      border: var(--border);
+      box-shadow: var(--shadow-lg);
+      padding: 36px;
+      background: var(--yellow);
+    }
+
+    .about-avatar {
+      width: 72px;
+      height: 72px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .about-card h3 {
+      font-size: 1.3rem;
+      font-weight: 900;
+      margin-bottom: 4px;
+    }
+
+    .about-card .role {
+      font-size: 0.875rem;
+      font-weight: 700;
+      background: var(--black);
+      color: var(--yellow);
+      display: inline-block;
+      padding: 2px 8px;
+      margin-bottom: 14px;
+    }
+
+    .about-card p {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .about-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--black);
+      color: var(--yellow);
+      font-weight: 800;
+      font-size: 13px;
+      padding: 10px 18px;
+      border: var(--border);
+      box-shadow: 3px 3px 0 #000;
+      transition: transform 0.08s, box-shadow 0.08s;
+    }
+
+    .about-link:hover { transform: translate(2px, 2px); box-shadow: 1px 1px 0 #000; }
+
+    .about-text h2 {
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+
+    .about-text p {
+      font-size: 0.95rem;
+      color: #444;
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+
+    /* ── SUPPORT / DONATE ── */
+    .support-section {
+      background: var(--yellow);
+      border-top: var(--border);
+    }
+
+    .support-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 80px 32px;
+      text-align: center;
+    }
+
+    .support-inner h2 {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+
+    .support-inner p {
+      font-size: 1rem;
+      max-width: 520px;
+      margin: 0 auto 32px;
+      line-height: 1.6;
+    }
+
+    .support-actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .btn-support {
+      background: var(--black);
+      color: var(--yellow);
+      box-shadow: var(--shadow);
+      font-size: 17px;
+      padding: 16px 36px;
+    }
+
+    .btn-support:hover { transform: translate(2px, 2px); box-shadow: 3px 3px 0 #000; }
+
+    .perks {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      margin-top: 36px;
+      flex-wrap: wrap;
+    }
+
+    .perk {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.875rem;
+      font-weight: 700;
+    }
+
+    .perk-check {
+      width: 22px;
+      height: 22px;
+      background: var(--black);
+      color: var(--yellow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 900;
+      flex-shrink: 0;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--black);
+      color: var(--white);
+      border-top: var(--border);
+      padding: 24px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    footer .foot-logo {
+      font-weight: 900;
+      font-size: 15px;
+      color: var(--yellow);
+    }
+
+    footer .foot-links {
+      display: flex;
+      gap: 20px;
+    }
+
+    footer .foot-links a {
+      font-size: 13px;
+      color: #888;
+      font-weight: 600;
+    }
+
+    footer .foot-links a:hover { color: var(--yellow); }
+
+    footer .foot-copy {
+      font-size: 12px;
+      color: #555;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      nav { padding: 12px 16px; }
+      .hero { grid-template-columns: 1fr; padding: 48px 16px 40px; gap: 32px; }
+      .hero-visual { display: none; }
+      .section { padding: 56px 16px; }
+      .features-grid { grid-template-columns: 1fr; }
+      .pro-grid { grid-template-columns: 1fr; }
+      .steps { grid-template-columns: 1fr; }
+      .step { border-right: none; border-bottom: var(--border); }
+      .step:last-child { border-bottom: none; }
+      .step-arrow { display: none; }
+      .about-inner { grid-template-columns: 1fr; padding: 56px 16px; gap: 32px; }
+      .support-inner { padding: 56px 16px; }
+      footer { padding: 20px 16px; flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <div class="nav-logo">
+    <svg width="36" height="36" viewBox="0 0 192 192" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="192" height="192" fill="black"/>
+      <path d="M13 13H150L149.866 29H29.5V150H13V13Z" fill="#FFD400"/>
+      <path d="M42 42H178V178H42V42Z" fill="#FFD400"/>
+      <path d="M148.863 114.13C151.217 114.13 153.456 114.368 155.577 114.849C157.503 115.28 159.34 115.906 161.089 116.726C162.163 115.887 163.304 115.396 164.504 115.396C165.987 115.396 167.26 115.92 168.227 116.992C169.243 118.117 169.629 119.862 169.629 121.951V127.381C169.629 129.481 169.225 131.234 168.185 132.382L168.184 132.381C167.217 133.452 165.945 133.976 164.463 133.976C163.261 133.976 162.184 133.602 161.285 132.841C160.477 132.206 159.957 131.028 159.578 129.647L159.572 129.625C159.222 128.225 158.861 127.498 158.591 127.21L158.586 127.206C158.029 126.608 156.923 125.977 155.093 125.394L155.085 125.391L155.077 125.388C153.346 124.803 151.374 124.502 149.149 124.502C145.966 124.502 143.254 125.154 140.977 126.418C139.442 127.311 137.949 128.908 136.535 131.318C135.156 133.667 134.468 136.214 134.467 138.979V145.023C134.468 149.319 135.698 152.431 138.018 154.532C140.365 156.605 144.206 157.745 149.761 157.745C153.234 157.745 156.395 157.134 159.257 155.927V151.578H151.721C149.628 151.578 147.881 151.189 146.734 150.186L146.722 150.175L146.71 150.164C145.646 149.168 145.127 147.874 145.127 146.371C145.127 144.868 145.646 143.579 146.722 142.607C147.87 141.567 149.622 141.165 151.721 141.164H151.724L166.59 141.206C168.67 141.206 170.407 141.589 171.532 142.596C172.639 143.565 173.181 144.857 173.181 146.371C173.181 147.572 172.808 148.656 172.058 149.576L172.057 149.575C171.458 150.337 170.629 150.898 169.629 151.29V162.404L169.103 162.687C165.285 164.747 161.985 166.174 159.216 166.937L159.215 166.936C156.477 167.725 153.528 168.117 150.374 168.117C146.001 168.117 141.929 167.461 138.166 166.142C135.222 165.133 132.831 163.836 131.042 162.223L131.036 162.218C129.275 160.604 127.697 158.276 126.276 155.295L126.274 155.292C124.816 152.204 124.095 148.774 124.095 145.023V138.979C124.095 133.177 125.871 127.979 129.411 123.419C134.184 117.227 140.704 114.13 148.863 114.13Z" fill="black"/>
+      <path d="M70.2682 48.8705C72.4875 48.8706 74.5572 49.1228 76.4714 49.6352C78.1606 50.0575 79.7213 50.6869 81.1452 51.5258C82.186 50.6746 83.3134 50.1772 84.5202 50.1772C86.0144 50.1772 87.2893 50.7236 88.2536 51.8256C89.2883 52.9498 89.6852 54.6732 89.6852 56.7309V63.02C89.6852 65.1186 89.282 66.87 88.2429 68.018L88.2438 68.019C87.2761 69.0904 86.0036 69.6146 84.5202 69.6147C83.2664 69.6147 82.1405 69.2293 81.1901 68.4487C80.3139 67.7568 79.808 66.539 79.4997 65.1098C79.2088 63.7612 78.8655 62.9465 78.5427 62.5287L78.5388 62.5239C77.8782 61.6585 76.8467 60.8774 75.3718 60.2162C73.9442 59.5764 72.2641 59.2427 70.3093 59.2426C67.4387 59.2426 65.2868 59.9142 63.7458 61.1469L63.7448 61.1479C62.1268 62.4373 61.5076 63.6364 61.5075 64.7358C61.5076 65.5227 61.7723 66.3254 62.3727 67.1606C62.898 67.836 63.6477 68.4159 64.6647 68.8793L65.1198 69.0727L65.1354 69.0786C65.5145 69.2346 66.3224 69.4671 67.6286 69.7748C68.9118 70.0772 70.6171 70.4389 72.7487 70.8598C77.074 71.7084 80.4494 72.6503 82.8356 73.7006C85.3245 74.784 87.3863 76.4843 89.0114 78.7768C90.5722 80.9786 91.3817 83.5586 91.4724 86.477C91.6651 86.4695 91.8611 86.4653 92.0602 86.4653H92.0641L103.376 86.5053C105.441 86.5056 107.167 86.8927 108.29 87.9067C109.39 88.8746 109.925 90.1624 109.925 91.6713C109.925 93.1743 109.407 94.4689 108.343 95.4643L108.337 95.4702L108.331 95.476C107.206 96.4919 105.461 96.8774 103.372 96.8774H102.912L113.462 122.198L124.084 96.8774H123.669C121.575 96.8773 119.828 96.4902 118.681 95.4868L118.669 95.476L118.656 95.4643C117.592 94.4689 117.074 93.1743 117.074 91.6713C117.074 90.1683 117.592 88.8789 118.669 87.9067C119.817 86.8672 121.57 86.4653 123.669 86.4653H123.672L134.902 86.5053C136.99 86.5056 138.732 86.8913 139.856 87.9067C140.956 88.8746 141.493 90.1622 141.493 91.6713C141.493 93.5155 140.661 94.9992 139.103 96.0444C138.613 96.3851 137.968 96.5811 137.271 96.6996C136.721 96.7932 136.083 96.8464 135.364 96.8666L118.168 138H108.791L91.6345 96.8666C90.9032 96.8466 90.2554 96.7943 89.6989 96.7006C89.1651 96.6107 88.6614 96.4748 88.2341 96.2651C87.7885 96.7749 87.2982 97.2598 86.7604 97.7172L86.7585 97.7202C82.6802 101.167 77.51 102.857 71.3298 102.857C68.9324 102.857 66.5879 102.561 64.2995 101.967C62.2878 101.464 60.3249 100.724 58.4108 99.7553C57.8711 100.337 57.356 100.791 56.8727 101.052L56.8737 101.054C56.8674 101.058 56.8605 101.06 56.8542 101.064L56.8513 101.066L56.8503 101.065C56.231 101.407 55.5142 101.549 54.7497 101.549C53.2263 101.549 51.9156 101.036 50.9157 99.9672L50.905 99.9545L50.8932 99.9418C49.8914 98.7965 49.5026 97.0659 49.5026 94.9955V89.3598C49.5027 87.271 49.888 85.5267 50.904 84.4018L50.905 84.4008C51.902 83.3008 53.2159 82.7651 54.7497 82.7651C55.9137 82.7651 56.9611 83.0765 57.821 83.7573C58.7287 84.4541 59.327 85.5466 59.7106 86.8715C60.0568 88.0432 60.3735 88.6744 60.6003 88.9389C61.2497 89.6245 62.492 90.4102 64.4577 91.2602C66.3359 92.0724 68.4046 92.4848 70.6765 92.4848C74.25 92.4848 77.0921 91.652 79.277 90.0629L79.2849 90.0561L79.2936 90.0502C80.6097 89.1335 81.152 88.1078 81.152 86.9506C81.1519 86.1754 80.8827 85.4277 80.2751 84.685L80.2702 84.6791L80.2663 84.6733C79.6903 83.948 78.6823 83.2704 77.1159 82.7055L77.1042 82.7006C76.1124 82.3287 73.7674 81.7842 69.9636 81.0727C65.3559 80.2224 61.7865 79.1809 59.3171 77.9174C56.8189 76.6392 54.8302 74.8287 53.3708 72.4936C51.9118 70.1592 51.1775 67.6209 51.1774 64.8989C51.1775 60.5772 53.0005 56.8194 56.53 53.6616L56.8679 53.3647C60.3856 50.3468 64.8808 48.8705 70.2682 48.8705Z" fill="black"/>
+    </svg>
+    GetSVG
+  </div>
+  <a href="#support" class="nav-cta">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+    Get Pro — $3
+  </a>
+</nav>
+
+<!-- ── HERO ── -->
+<div style="background: var(--yellow); border-bottom: 3px solid #000;">
+  <div class="hero">
+    <div class="hero-text">
+      <div class="section-label" style="margin-bottom: 20px;">Chrome Extension</div>
+      <h1>Grab any<br /><span>SVG</span> from<br />any website.</h1>
+      <p>Right-click to copy or save. Highlight all SVGs on a page. Browse every SVG in a clean panel — instantly, no fuss.</p>
+      <div class="hero-actions">
+        <a href="https://chrome.google.com/webstore" target="_blank" class="btn btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Add to Chrome — Free
+        </a>
+        <a href="#features" class="btn btn-outline">See Features</a>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-mockup">
+        <div class="hero-mockup-inner">
+          <div class="popup-preview" style="position:relative;">
+            <div class="popup-header">
+              <svg width="12" height="12" viewBox="0 0 192 192" fill="none"><rect width="192" height="192" fill="black"/><path d="M13 13H150L149.866 29H29.5V150H13V13Z" fill="#FFD400"/><path d="M42 42H178V178H42V42Z" fill="#FFD400"/></svg>
+              GetSVG
+              <span style="margin-left:auto; background:#000; color:#FFD400; font-size:8px; font-weight:900; padding:1px 5px;">7 SVGs</span>
+            </div>
+            <div class="popup-item">
+              <div class="popup-thumb">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 12l3 3 5-5"/></svg>
+              </div>
+              <div class="popup-row">
+                <div class="popup-btn" style="flex:2; background:#FFD400;">COPY</div>
+              </div>
+              <div class="popup-row">
+                <div class="popup-btn">↓ SAVE</div>
+                <div class="popup-btn">URI</div>
+              </div>
+            </div>
+            <div class="popup-item">
+              <div class="popup-thumb">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>
+              </div>
+              <div class="popup-row">
+                <div class="popup-btn" style="flex:2; background:#FFD400;">COPY</div>
+              </div>
+              <div class="popup-row">
+                <div class="popup-btn">↓ SAVE</div>
+                <div class="popup-btn">URI</div>
+              </div>
+            </div>
+            <span class="badge-count">Free</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── FEATURES ── -->
+<section id="features">
+  <div class="section">
+    <div class="section-label">Core Features</div>
+    <h2 class="section-title">Everything you need<br />to work with SVGs</h2>
+    <p class="section-sub">No page refresh, no devtools. Right-click or open the panel — done.</p>
+
+    <div class="features-grid">
+
+      <!-- Feature 1: Right-click copy -->
+      <div class="feature-card">
+        <div class="feature-media">
+          <div class="feature-media-inner">
+            <div style="position:relative; display:flex; align-items:flex-start; gap:12px;">
+              <!-- "webpage" background hint -->
+              <div style="width:80px; height:90px; background:#fff; border:1.5px solid #555; padding:6px; flex-shrink:0;">
+                <div style="width:100%; height:14px; background:#e0e0e0; margin-bottom:5px;"></div>
+                <div style="width:50px; height:50px; background:#f0f0f0; border:1px solid #ccc; margin:0 auto; display:flex; align-items:center; justify-content:center;">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#FFD400" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-5"/></svg>
+                </div>
+              </div>
+              <!-- context menu -->
+              <div class="ctx-menu">
+                <div class="ctx-item" style="background:#eee; color:#888; font-size:10px;">svg.check-icon</div>
+                <div class="ctx-item active">
+                  <div class="ctx-dot"></div>
+                  Copy SVG
+                </div>
+                <div class="ctx-item">
+                  <div class="ctx-dot" style="background:#fff;"></div>
+                  Download SVG
+                </div>
+                <div class="ctx-item">
+                  <div class="ctx-dot" style="background:#fff;"></div>
+                  Highlight All SVGs
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="feature-media-label">Screenshot Placeholder — Right Click Copy</div>
+        </div>
+        <div class="feature-info">
+          <h3>Right-click &rarr; Copy</h3>
+          <p>Right-click any SVG on the page to instantly copy the clean SVG markup to clipboard. Works on inline SVGs, image tags, and background SVGs.</p>
+        </div>
+      </div>
+
+      <!-- Feature 2: Right-click save -->
+      <div class="feature-card">
+        <div class="feature-media">
+          <div class="feature-media-inner">
+            <div style="position:relative; display:flex; align-items:flex-start; gap:12px;">
+              <div style="width:80px; height:90px; background:#fff; border:1.5px solid #555; padding:6px; flex-shrink:0;">
+                <div style="width:100%; height:14px; background:#e0e0e0; margin-bottom:5px;"></div>
+                <div style="width:50px; height:50px; background:#f0f0f0; border:1px solid #ccc; margin:0 auto; display:flex; align-items:center; justify-content:center;">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#FFD400" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+                </div>
+              </div>
+              <div class="ctx-menu">
+                <div class="ctx-item" style="background:#eee; color:#888; font-size:10px;">svg.logo-icon</div>
+                <div class="ctx-item">
+                  <div class="ctx-dot" style="background:#fff;"></div>
+                  Copy SVG
+                </div>
+                <div class="ctx-item active">
+                  <div class="ctx-dot"></div>
+                  Download SVG
+                </div>
+                <div class="ctx-item">
+                  <div class="ctx-dot" style="background:#fff;"></div>
+                  Highlight All SVGs
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="feature-media-label">Screenshot Placeholder — Right Click Save</div>
+        </div>
+        <div class="feature-info">
+          <h3>Right-click &rarr; Save</h3>
+          <p>Download any SVG directly to your filesystem with one click from the context menu. File is cleaned and ready to use.</p>
+        </div>
+      </div>
+
+      <!-- Feature 3: Highlight all / hide -->
+      <div class="feature-card">
+        <div class="feature-media">
+          <div class="feature-media-inner">
+            <div class="highlight-scene">
+              <div class="hl-page">
+                <!-- nav blocks -->
+                <div class="hl-block" style="width:100%; height:10px;"></div>
+                <!-- content area -->
+                <div style="display:flex; gap:6px; width:100%;">
+                  <div class="hl-block" style="width:32px; height:32px; position:relative;">
+                    <div class="hl-overlay" style="inset:-3px; border-color:#FFD400;">
+                      <span class="hl-label">SVG</span>
+                    </div>
+                  </div>
+                  <div style="flex:1;">
+                    <div class="hl-block" style="width:100%; height:6px; margin-bottom:4px;"></div>
+                    <div class="hl-block" style="width:70%; height:6px;"></div>
+                  </div>
+                </div>
+                <div style="display:flex; gap:6px; width:100%; margin-top:4px;">
+                  <div class="hl-block" style="width:28px; height:28px; position:relative;">
+                    <div class="hl-overlay" style="inset:-3px; border-color:#FFD400;">
+                      <span class="hl-label">SVG</span>
+                    </div>
+                  </div>
+                  <div class="hl-block" style="width:28px; height:28px; position:relative;">
+                    <div class="hl-overlay" style="inset:-3px; border-color:#FFD400;">
+                      <span class="hl-label">SVG</span>
+                    </div>
+                  </div>
+                  <div class="hl-block" style="width:28px; height:28px; position:relative;">
+                    <div class="hl-overlay" style="inset:-3px; border-color:#FFD400;">
+                      <span class="hl-label">SVG</span>
+                    </div>
+                  </div>
+                </div>
+                <div style="position:absolute; top:8px; right:8px; background:#FFD400; border:1.5px solid #000; font-size:7px; font-weight:900; padding:2px 6px;">HIDE HIGHLIGHTS</div>
+              </div>
+            </div>
+          </div>
+          <div class="feature-media-label">Screenshot Placeholder — Highlight All / Hide</div>
+        </div>
+        <div class="feature-info">
+          <h3>Highlight All SVGs</h3>
+          <p>Flash a bright yellow border around every SVG on the page. Toggle it off just as easily. Find hidden icons and assets you didn't know were there.</p>
+        </div>
+      </div>
+
+      <!-- Feature 4: SVG List in popup -->
+      <div class="feature-card">
+        <div class="feature-media">
+          <div class="feature-media-inner">
+            <div class="svg-list">
+              <div class="svg-list-header">
+                All SVGs on page
+                <span class="svg-list-count">7 found</span>
+              </div>
+              <div class="svg-list-item">
+                <div class="svg-list-thumb">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFD400" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>
+                </div>
+                <div style="font-size:9px; font-weight:700; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#333;">logo-icon.svg</div>
+                <div class="svg-list-actions">
+                  <div class="svg-mini-btn">C</div>
+                  <div class="svg-mini-btn">↓</div>
+                  <div class="svg-mini-btn">⊕</div>
+                </div>
+              </div>
+              <div class="svg-list-item" style="background:#fffbe6;">
+                <div class="svg-list-thumb">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+                </div>
+                <div style="font-size:9px; font-weight:700; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#333;">hero-bg.svg</div>
+                <div class="svg-list-actions">
+                  <div class="svg-mini-btn" style="background:#000; color:#FFD400;">C</div>
+                  <div class="svg-mini-btn">↓</div>
+                  <div class="svg-mini-btn">⊕</div>
+                </div>
+              </div>
+              <div class="svg-list-item">
+                <div class="svg-list-thumb">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFD400" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+                </div>
+                <div style="font-size:9px; font-weight:700; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#333;">nav-home.svg</div>
+                <div class="svg-list-actions">
+                  <div class="svg-mini-btn">C</div>
+                  <div class="svg-mini-btn">↓</div>
+                  <div class="svg-mini-btn">⊕</div>
+                </div>
+              </div>
+              <div style="padding:5px 10px; font-size:9px; color:#888; font-weight:700; text-align:center;">+ 4 more</div>
+            </div>
+          </div>
+          <div class="feature-media-label">Screenshot Placeholder — SVG Panel List</div>
+        </div>
+        <div class="feature-info">
+          <h3>Browse All SVGs in Panel</h3>
+          <p>Open the extension popup to see every SVG on the current page. Copy, download, or locate each one with one click from a clean thumbnail list.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── PRO FEATURES ── -->
+<section id="pro" class="pro-section">
+  <div class="pro-inner">
+    <div class="section-label">Pro Features</div>
+    <h2 class="section-title">Power tools for<br />power users.</h2>
+    <p class="section-sub">Unlock three extra features with a one-time $3 donation. No subscription, no account.</p>
+
+    <div class="pro-grid">
+
+      <div class="pro-card">
+        <div class="pro-badge">PRO</div>
+        <div class="pro-card-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </div>
+        <h3>Bulk Download as ZIP</h3>
+        <p>Download every SVG on the page in one click, bundled into a neat ZIP file. Stop saving icons one by one.</p>
+      </div>
+
+      <div class="pro-card">
+        <div class="pro-badge">PRO</div>
+        <div class="pro-card-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div>
+        <h3>SVGO Optimize</h3>
+        <p>Run SVGO client-side before downloading or copying. Shrink file sizes without leaving your browser — no server, fully private.</p>
+      </div>
+
+      <div class="pro-card">
+        <div class="pro-badge">PRO</div>
+        <div class="pro-card-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        </div>
+        <h3>Copy as Data URI</h3>
+        <p>Copy any SVG as a base64 Data URI, ready to paste directly into CSS <code style="background:#222; padding:1px 5px; font-size:11px;">background-image</code> or HTML attributes.</p>
+      </div>
+
+    </div>
+
+    <div class="pro-cta-row">
+      <div>
+        <div class="pro-price">
+          <span class="amount">$3</span>
+          <span class="period">one-time</span>
+        </div>
+        <p class="pro-note">Pay once. Yours forever. No server, no account.</p>
+      </div>
+      <a href="https://juniorlabdev.gumroad.com/l/getsvg_pro" target="_blank" class="btn btn-pro" style="font-size:17px; padding:16px 36px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        Donate &amp; Get Pro
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── HOW IT WORKS ── -->
+<section id="how" class="how-section">
+  <div class="section" style="padding-bottom: 0;">
+    <div class="section-label">Setup</div>
+    <h2 class="section-title">Up and running<br />in 60 seconds.</h2>
+  </div>
+  <div style="max-width:1200px; margin:0 auto; padding:32px 32px 80px;">
+    <div class="steps">
+
+      <div class="step">
+        <div class="step-num">1</div>
+        <h3>Install from Chrome Web Store</h3>
+        <p>Click "Add to Chrome" — it's free. No permissions beyond the current tab.</p>
+        <div class="step-visual">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Add to Chrome
+        </div>
+        <div class="step-arrow">→</div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">2</div>
+        <h3>Pin the Extension</h3>
+        <p>Click the puzzle icon in your Chrome toolbar, find GetSVG, and pin it for quick access.</p>
+        <div class="step-visual">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          Pin to Toolbar
+        </div>
+        <div class="step-arrow">→</div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">3</div>
+        <h3>Use It Anywhere</h3>
+        <p>Right-click any SVG on any site, or open the panel to browse all SVGs on the page.</p>
+        <div class="step-visual">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          Done!
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── ABOUT BUILDER ── -->
+<section id="about" class="about-section">
+  <div class="about-inner">
+    <div class="about-card">
+      <div class="about-avatar">
+        <svg width="72" height="72" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M74.4532 104.986L105.055 47.4943C105.811 46.0056 106.885 44.6896 108.205 43.6337C109.25 42.7973 110.432 42.1391 111.698 41.6844C114.251 41.4161 116.825 41.2709 119.411 41.2516C122.72 41.2269 126.013 41.4089 129.272 41.7915C130.34 42.1947 131.348 42.7422 132.265 43.4204C133.733 44.5059 134.929 45.8984 135.765 47.4942L166.342 104.986C167.615 107.316 169.52 109.264 171.851 110.619C174.181 111.975 176.85 112.688 179.567 112.679H240C239.858 84.3209 228.715 57.054 208.787 36.3056C189.386 16.1054 163.044 3.52586 134.766 0.901195C129.591 0.266853 124.358 -0.0358434 119.098 0.00337705C112.973 0.0490493 106.89 0.558008 100.9 1.5132C74.2386 4.97056 49.5594 17.3023 31.1483 36.5029C11.2626 57.2415 0.143848 84.4766 0 112.8H61.2281C63.9586 112.797 66.6358 112.066 68.9678 110.689C71.2998 109.311 73.1972 107.338 74.4532 104.986Z" fill="black"/>
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M74.4532 135.013L105.055 192.505C105.811 193.994 106.885 195.31 108.205 196.366C109.25 197.202 110.432 197.861 111.698 198.315C114.251 198.584 116.825 198.729 119.411 198.748C122.72 198.773 126.013 198.591 129.272 198.208C130.34 197.805 131.348 197.258 132.265 196.579C133.733 195.494 134.929 194.101 135.765 192.506L166.342 135.013C167.615 132.684 169.52 130.736 171.851 129.38C174.181 128.024 176.85 127.32 179.567 127.32H240C239.858 155.679 228.715 182.946 208.787 203.694C189.386 223.894 163.044 236.474 134.766 239.099C129.591 239.733 124.358 240.036 119.098 239.996C112.973 239.951 106.89 239.442 100.9 238.487C74.2386 235.029 49.5594 222.697 31.1483 203.497C11.2626 182.758 0.143848 155.523 0 127.2H61.2281C63.9586 127.203 66.6358 127.933 68.9678 129.311C71.2998 130.689 73.1972 132.661 74.4532 135.013Z" fill="black"/>
+        </svg>
+      </div>
+      <h3>ADAUI Studio</h3>
+      <div class="role">Builder / Designer</div>
+      <p>We build focused tools for designers and developers who care about craft. GetSVG started as a personal scratch — I was tired of digging through DevTools just to grab an SVG.</p>
+      <p>Built with Vite, TypeScript, and zero runtime frameworks. Fast, small, and yours to keep.</p>
+      <a href="https://adaui.id" target="_blank" class="about-link">
+        Visit adaui.id
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      </a>
+    </div>
+    <div class="about-text">
+      <div class="section-label">About</div>
+      <h2>Made by a designer<br />who uses it daily.</h2>
+      <p>GetSVG is a solo project built out of genuine need. Every feature exists because it solved a real friction point — not because it looked good on a roadmap.</p>
+      <p>No VC money. No analytics. No tracking. Just a useful tool that respects your time and your browser.</p>
+      <p>If it saves you 30 seconds today, that's a win.</p>
+      <div style="display:flex; gap:16px; margin-top:8px; flex-wrap:wrap;">
+        <div style="display:flex; align-items:center; gap:8px; font-size:0.875rem; font-weight:700;">
+          <div style="width:10px; height:10px; background:var(--yellow); border:2px solid #000;"></div>
+          Manifest V3
+        </div>
+        <div style="display:flex; align-items:center; gap:8px; font-size:0.875rem; font-weight:700;">
+          <div style="width:10px; height:10px; background:var(--yellow); border:2px solid #000;"></div>
+          No server, pure client
+        </div>
+        <div style="display:flex; align-items:center; gap:8px; font-size:0.875rem; font-weight:700;">
+          <div style="width:10px; height:10px; background:var(--yellow); border:2px solid #000;"></div>
+          Open for feedback
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SUPPORT / GET PRO ── -->
+<section id="support" class="support-section">
+  <div class="support-inner">
+    <div class="section-label" style="margin-bottom:20px;">Support the Project</div>
+    <h2>GetSVG is free.<br />Pro is $3.</h2>
+    <p>A one-time donation unlocks Pro features and keeps this tool alive and maintained. No subscription. No account. Just a receipt code that activates Pro locally.</p>
+
+    <div class="support-actions">
+      <a href="https://juniorlabdev.gumroad.com/l/getsvg_pro" target="_blank" class="btn btn-support">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        Donate &amp; Get Pro on Gumroad
+      </a>
+      <a href="https://chrome.google.com/webstore" target="_blank" class="btn btn-outline" style="background:transparent; border-color:#000;">
+        Add to Chrome — Free
+      </a>
+    </div>
+
+    <div class="perks">
+      <div class="perk">
+        <div class="perk-check">✓</div>
+        Bulk Download ZIP
+      </div>
+      <div class="perk">
+        <div class="perk-check">✓</div>
+        SVGO Optimize
+      </div>
+      <div class="perk">
+        <div class="perk-check">✓</div>
+        Copy as Data URI
+      </div>
+      <div class="perk">
+        <div class="perk-check">✓</div>
+        Support future updates
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="foot-logo">GetSVG</div>
+  <div class="foot-links">
+    <a href="#features">Features</a>
+    <a href="#pro">Pro</a>
+    <a href="#how">How it works</a>
+    <a href="#about">About</a>
+    <a href="https://adaui.id" target="_blank">ADAUI</a>
+  </div>
+  <div class="foot-copy">&copy; 2026 ADAUI Studio. Made with care.</div>
+</footer>
+
+</body>
+</html>

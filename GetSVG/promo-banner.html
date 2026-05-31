@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    width: 1280px;
+    height: 720px;
+    background: #FFD700;
+    font-family: 'Courier New', Courier, monospace;
+    overflow: hidden;
+  }
+
+  .banner {
+    width: 1280px;
+    height: 720px;
+    background: #FFD700;
+    position: relative;
+    display: flex;
+    align-items: stretch;
+  }
+
+  /* Left column */
+  .left {
+    flex: 1;
+    padding: 64px 56px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border-right: 4px solid #000;
+  }
+
+  .logo-row {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .logo-wrap {
+    position: relative;
+    width: 72px;
+    height: 72px;
+  }
+
+  .logo-wrap img {
+    width: 72px;
+    height: 72px;
+    display: block;
+  }
+
+  .brand-name {
+    font-size: 36px;
+    font-weight: 900;
+    letter-spacing: 0.06em;
+    color: #000;
+    text-transform: uppercase;
+  }
+
+  .heading {
+    font-size: 68px;
+    font-weight: 900;
+    line-height: 1.0;
+    color: #000;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    max-width: 620px;
+  }
+
+  .heading em {
+    font-style: normal;
+    background: #000;
+    color: #FFD700;
+    padding: 0 6px;
+  }
+
+  .bullets {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .bullets li {
+    font-size: 22px;
+    font-weight: 700;
+    color: #000;
+    letter-spacing: 0.02em;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .bullet-dash {
+    width: 28px;
+    height: 4px;
+    background: #000;
+    flex-shrink: 0;
+  }
+
+  /* Right column */
+  .right {
+    width: 420px;
+    background: #000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    padding: 48px 40px;
+  }
+
+  .mock-header {
+    width: 100%;
+    background: #FFD700;
+    border: 3px solid #FFD700;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+  }
+
+  .mock-header-title {
+    font-size: 18px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #000;
+  }
+
+  .mock-badge {
+    background: #000;
+    color: #FFD700;
+    font-size: 11px;
+    font-weight: 900;
+    padding: 4px 10px;
+    letter-spacing: 0.06em;
+  }
+
+  .mock-body {
+    width: 100%;
+    border: 3px solid #FFD700;
+    border-top: none;
+  }
+
+  .mock-btn-row {
+    display: flex;
+    border-bottom: 3px solid #FFD700;
+  }
+
+  .mock-btn {
+    flex: 1;
+    padding: 10px 8px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border: none;
+    cursor: pointer;
+  }
+
+  .mock-btn.yellow {
+    background: #FFD700;
+    color: #000;
+  }
+
+  .mock-btn.outline {
+    background: #000;
+    color: #888;
+    border-left: 2px solid #FFD700;
+  }
+
+  .mock-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    border-bottom: 2px solid #333;
+    gap: 12px;
+  }
+
+  .mock-item:last-child {
+    border-bottom: none;
+  }
+
+  .mock-icon {
+    width: 36px;
+    height: 36px;
+    background: #1a1a1a;
+    border: 2px solid #FFD700;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mock-icon svg {
+    width: 18px;
+    height: 18px;
+    fill: #FFD700;
+  }
+
+  .mock-item-info {
+    flex: 1;
+  }
+
+  .mock-tag {
+    background: #FFD700;
+    color: #000;
+    font-size: 9px;
+    font-weight: 900;
+    padding: 2px 6px;
+    letter-spacing: 0.06em;
+    display: inline-block;
+    margin-bottom: 3px;
+  }
+
+  .mock-size {
+    color: #888;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .mock-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .mock-copy {
+    background: #FFD700;
+    color: #000;
+    font-size: 10px;
+    font-weight: 900;
+    padding: 4px 10px;
+    letter-spacing: 0.06em;
+    text-align: center;
+  }
+
+  .mock-save {
+    background: #000;
+    color: #FFD700;
+    border: 1.5px solid #FFD700;
+    font-size: 10px;
+    font-weight: 900;
+    padding: 4px 10px;
+    letter-spacing: 0.04em;
+    text-align: center;
+  }
+
+  .cta-strip {
+    margin-top: 24px;
+    width: 100%;
+    background: #FFD700;
+    padding: 14px 20px;
+    text-align: center;
+    font-size: 15px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #000;
+    border: 3px solid #FFD700;
+  }
+
+  .domain {
+    margin-top: 12px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #888;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* decorative corner tick marks */
+  .corner-tl, .corner-br {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-color: #000;
+    border-style: solid;
+  }
+  .corner-tl {
+    top: 16px; left: 16px;
+    border-width: 3px 0 0 3px;
+  }
+  .corner-br {
+    bottom: 16px; right: 16px;
+    border-width: 0 3px 3px 0;
+  }
+</style>
+</head>
+<body>
+<div class="banner">
+  <div class="corner-tl"></div>
+  <div class="corner-br"></div>
+
+  <!-- LEFT -->
+  <div class="left">
+    <div class="logo-row">
+      <div class="logo-wrap">
+        <img src="icons/icon128.png" alt="GetSVG logo">
+      </div>
+      <span class="brand-name" style="text-transform:none;">GetSVG</span>
+    </div>
+
+    <div class="heading">
+      The fastest way<br>to <em>steal</em> —<br>legally.
+    </div>
+
+    <ul class="bullets">
+      <li><span class="bullet-dash"></span>Right-click. Copy SVG. Move on.</li>
+      <li><span class="bullet-dash"></span>1-click SVG highlighter, extractor, download all</li>
+      <li><span class="bullet-dash"></span>SVGO — get optimised and clean SVG files</li>
+    </ul>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="right">
+    <div class="mock-header">
+      <span class="mock-header-title" style="text-transform:none;">GetSVG</span>
+      <span class="mock-badge">48 SVGs FOUND</span>
+    </div>
+    <div class="mock-body">
+      <div class="mock-btn-row">
+        <div class="mock-btn yellow">HIGHLIGHT ALL</div>
+        <div class="mock-btn outline">DOWNLOAD ALL 🔒</div>
+      </div>
+
+      <!-- item 1 -->
+      <div class="mock-item">
+        <div class="mock-icon">
+          <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </div>
+        <div class="mock-item-info">
+          <span class="mock-tag">INLINE</span><br>
+          <span class="mock-size">16×16px</span>
+        </div>
+        <div class="mock-actions">
+          <div class="mock-copy">COPY</div>
+          <div class="mock-save">↓ SAVE</div>
+        </div>
+      </div>
+
+      <!-- item 2 -->
+      <div class="mock-item">
+        <div class="mock-icon">
+          <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+        </div>
+        <div class="mock-item-info">
+          <span class="mock-tag">INLINE</span><br>
+          <span class="mock-size">20×20px</span>
+        </div>
+        <div class="mock-actions">
+          <div class="mock-copy">COPY</div>
+          <div class="mock-save">↓ SAVE</div>
+        </div>
+      </div>
+
+      <!-- item 3 -->
+      <div class="mock-item">
+        <div class="mock-icon">
+          <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        </div>
+        <div class="mock-item-info">
+          <span class="mock-tag">INLINE</span><br>
+          <span class="mock-size">20×20px</span>
+        </div>
+        <div class="mock-actions">
+          <div class="mock-copy">COPY</div>
+          <div class="mock-save">↓ SAVE</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cta-strip">FREE CHROME EXTENSION</div>
+    <div class="domain">getsvg.xyz</div>
+  </div>
+</div>
+</body>
+</html>

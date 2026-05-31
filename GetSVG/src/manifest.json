@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "GetSVG - SVG Grabber & Downloader",
+  "version": "1.0.0",
+  "description": "Right-click any SVG to copy or download it instantly. Highlights all SVGs on the page at once.",
+  "permissions": ["activeTab", "alarms", "contextMenus", "downloads", "scripting", "storage"],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "src/background/index.ts",
+    "type": "module"
+  },
+  "content_scripts": [{
+    "matches": ["<all_urls>"],
+    "js": ["src/content/index.ts"]
+  }],
+  "action": {
+    "default_popup": "src/popup/index.html",
+    "default_icon": "icons/icon48.png"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}

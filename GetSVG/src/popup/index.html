@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>GetSVG – SVG Grabber</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root { --size-bump: 1pt; } /* ← set to 0pt to revert font size bump */
+
+    body {
+      width: 340px;
+      min-height: 420px;
+      max-height: 520px;
+      font-family: 'Courier New', monospace;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* ── Header ── */
+    .header {
+      background: #FFD600;
+      border-bottom: 2px solid #000;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      gap: 8px;
+    }
+    .header-left {
+      display: flex;
+      align-items: baseline;
+      gap: 0;
+      min-width: 0;
+      flex: 1;
+    }
+    .title {
+      font-size: calc(15px + var(--size-bump));
+      font-weight: 900;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+    }
+    .count-inline {
+      font-size: calc(15px + var(--size-bump));
+      font-weight: 900;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+    }
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-shrink: 0;
+    }
+    .header-icon-btn {
+      background: transparent;
+      border: 2px solid #000;
+      padding: 5px 10px;
+      font-family: 'Courier New', monospace;
+      font-size: calc(10px + var(--size-bump));
+      font-weight: 900;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .header-icon-btn:active {
+      background: #000;
+      color: #FFD600;
+    }
+    .pro-badge-btn {
+      background: #000;
+      color: #FFD600;
+      border: 2px solid #000;
+      font-family: 'Courier New', monospace;
+      font-size: calc(10px + var(--size-bump));
+      font-weight: 900;
+      padding: 5px 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+    .pro-badge-btn.inactive {
+      background: #000;
+      color: #FFD600;
+      border-color: #000;
+    }
+    .pro-badge-btn:active {
+      opacity: 0.7;
+    }
+
+    /* ── Action bar ── */
+    .action-bar {
+      padding: 8px 10px;
+      border-bottom: 2px solid #000;
+      display: flex;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+    .action-btn {
+      flex: 1;
+      background: #fff;
+      border: 2px solid #000;
+      box-shadow: 2px 2px 0 #000;
+      padding: 6px 4px;
+      font-family: 'Courier New', monospace;
+      font-size: calc(10px + var(--size-bump));
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+    }
+    .action-btn:active {
+      box-shadow: none;
+      transform: translate(2px, 2px);
+    }
+    .action-btn.is-active {
+      background: #FFD600;
+    }
+    .action-btn.is-locked {
+      color: #aaa;
+      border-color: #ccc;
+      box-shadow: 2px 2px 0 #ccc;
+      cursor: pointer;
+    }
+    .action-btn:disabled {
+      box-shadow: none;
+      cursor: not-allowed;
+      transform: none;
+      opacity: 0.6;
+    }
+    .action-btn.ghost {
+      background: #fff;
+    }
+    .action-btn.is-loading {
+      background: #FFD600;
+      cursor: wait;
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+      opacity: 1;
+    }
+    .action-btn.is-loading::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        90deg,
+        transparent 0px,
+        transparent 12px,
+        rgba(0,0,0,0.07) 12px,
+        rgba(0,0,0,0.07) 24px
+      );
+      animation: btn-loading-sweep 0.5s linear infinite;
+      z-index: -1;
+    }
+    @keyframes btn-loading-sweep {
+      from { transform: translateX(0); }
+      to   { transform: translateX(24px); }
+    }
+
+    /* ── Bulk dropdown ── */
+    .bulk-dropdown {
+      position: absolute;
+      background: #fff;
+      border: 2px solid #000;
+      box-shadow: 4px 4px 0 #000;
+      z-index: 300;
+      display: none;
+      flex-direction: column;
+    }
+    .bulk-dropdown.open {
+      display: flex;
+    }
+    .bulk-option {
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid #eee;
+      padding: 9px 12px;
+      font-family: 'Courier New', monospace;
+      font-size: calc(10px + var(--size-bump));
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .bulk-option:last-child { border-bottom: none; }
+    .bulk-option:hover { background: #fffdf0; }
+    .bulk-option:active { background: #FFD600; }
+
+    /* ── Pro bar ── */
+    .pro-bar {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      padding: 5px 10px;
+      border-bottom: 1px solid #000;
+      background: #fffdf0;
+      flex-shrink: 0;
+    }
+    .pro-bar.visible {
+      display: flex;
+    }
+    .optimize-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex: 1;
+      font-size: calc(9px + var(--size-bump));
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+    }
+    .optimize-label input[type="checkbox"] {
+      width: 12px;
+      height: 12px;
+      accent-color: #000;
+      cursor: pointer;
+    }
+    .pro-bar-tag {
+      margin-left: auto;
+      font-size: calc(7px + var(--size-bump));
+      font-weight: 900;
+      background: #000;
+      color: #FFD600;
+      padding: 1px 5px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    /* ── List ── */
+    .list {
+      overflow-y: auto;
+      overflow-x: hidden;
+      flex: 1;
+    }
+    .list::-webkit-scrollbar { width: 6px; }
+    .list::-webkit-scrollbar-track { background: #f0f0f0; }
+    .list::-webkit-scrollbar-thumb { background: #000; }
+
+    .item {
+      display: grid;
+      grid-template-columns: 52px 1fr auto;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-bottom: 1px solid #000;
+    }
+    .item:last-child { border-bottom: none; }
+
+    /* ── Selection mode ── */
+    .item-check {
+      display: none;
+      width: 14px;
+      height: 14px;
+      accent-color: #000;
+      cursor: pointer;
+      align-self: center;
+      flex-shrink: 0;
+    }
+    .list.selection-mode .item {
+      grid-template-columns: 20px 52px 1fr;
+      cursor: pointer;
+    }
+    .list.selection-mode .item-check { display: block; }
+    .list.selection-mode .item-actions { display: none; }
+    .list.selection-mode .item:hover { background: #fffdf0; }
+    .list.selection-mode .item.is-selected { background: rgba(255, 214, 0, 0.2); }
+    .list.selection-mode .item.is-selected:hover { background: rgba(255, 214, 0, 0.3); }
+
+    .thumb {
+      width: 52px;
+      height: 52px;
+      border: 2px solid #000;
+      background: #f5f5f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .thumb-placeholder {
+      font-size: calc(8px + var(--size-bump));
+      font-weight: 800;
+      text-transform: uppercase;
+      color: #999;
+      letter-spacing: 0.06em;
+    }
+
+    .meta {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+    .method-badge {
+      display: inline-block;
+      background: #000;
+      color: #FFD600;
+      font-size: calc(7px + var(--size-bump));
+      font-weight: 900;
+      padding: 2px 5px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      align-self: flex-start;
+      margin-bottom: 2px;
+    }
+    .file-name {
+      font-size: calc(11px + var(--size-bump));
+      font-weight: 900;
+      color: #000;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .dims-size {
+      font-size: calc(9px + var(--size-bump));
+      font-weight: 600;
+      color: #999;
+      letter-spacing: 0.02em;
+    }
+
+    .item-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto;
+      gap: 4px;
+      width: 120px;
+    }
+    .item-btn {
+      background: #FFD600;
+      border: 2px solid #000;
+      box-shadow: 2px 2px 0 #000;
+      padding: 5px 6px;
+      font-family: 'Courier New', monospace;
+      font-size: calc(9px + var(--size-bump));
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+    .item-btn:active {
+      box-shadow: none;
+      transform: translate(2px, 2px);
+    }
+    .item-btn.copy-btn {
+      padding: 7px 6px;
+    }
+    .item-btn.ghost {
+      background: #fff;
+    }
+    .item-btn.locked {
+      background: #fff;
+      color: #ccc;
+      border-color: #e0e0e0;
+      box-shadow: 2px 2px 0 #e0e0e0;
+      cursor: pointer;
+    }
+.item-btn.feedback {
+      background: #000;
+      color: #FFD600;
+      border-color: #000;
+      box-shadow: none;
+      pointer-events: none;
+    }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #000;
+      color: #FFD600;
+      font-size: calc(11px + var(--size-bump));
+      font-weight: 800;
+      text-align: center;
+      padding: 9px 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border-top: 2px solid #FFD600;
+      transform: translateY(100%);
+      transition: transform 0.15s ease;
+      z-index: 100;
+      pointer-events: none;
+    }
+    .toast.show {
+      transform: translateY(0);
+    }
+
+    /* ── Empty / Error states ── */
+    .state-msg {
+      padding: 28px 16px;
+      text-align: center;
+      font-size: calc(11px + var(--size-bump));
+      font-weight: 700;
+      color: #555;
+      line-height: 1.6;
+    }
+    .state-msg strong {
+      display: block;
+      font-size: calc(13px + var(--size-bump));
+      font-weight: 900;
+      color: #000;
+      margin-bottom: 4px;
+    }
+
+    /* ── Slide panels (About & Pro) ── */
+    .slide-view {
+      position: absolute;
+      inset: 0;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      z-index: 200;
+      transform: translateX(100%);
+      transition: transform 0.2s ease;
+    }
+    .slide-view.open {
+      transform: translateX(0);
+    }
+    .slide-header {
+      background: #FFD600;
+      border-bottom: 2px solid #000;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .slide-back-btn {
+      background: transparent;
+      border: 2px solid #000;
+      width: 26px;
+      height: 26px;
+      font-family: 'Courier New', monospace;
+      font-size: calc(13px + var(--size-bump));
+      font-weight: 900;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .slide-back-btn:active {
+      background: #000;
+      color: #FFD600;
+    }
+    .slide-title {
+      font-size: calc(15px + var(--size-bump));
+      font-weight: 900;
+      letter-spacing: -0.01em;
+    }
+
+    /* ── About panel ── */
+    .about-body {
+      flex: 1;
+      min-height: 0;
+      padding: 16px 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      overflow-y: auto;
+    }
+    .about-logo {
+      display: flex;
+      justify-content: center;
+      padding: 4px 0;
+    }
+    .about-logo img {
+      width: 120px;
+      height: auto;
+      display: block;
+    }
+    .about-divider {
+      height: 2px;
+      background: #e0e0e0;
+      align-self: stretch;
+    }
+    .about-desc {
+      font-size: calc(10px + var(--size-bump));
+      font-weight: 600;
+      color: #555;
+      line-height: 1.7;
+      text-align: center;
+    }
+    .about-desc a {
+      color: #000;
+      font-weight: 900;
+      text-decoration: none;
+      border-bottom: 2px solid #FFD600;
+    }
+    .about-desc a:hover { background: #FFD600; }
+    .about-made-by {
+      font-size: calc(9px + var(--size-bump));
+      font-weight: 700;
+      color: #999;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      text-align: center;
+    }
+    .about-studio {
+      font-size: calc(14px + var(--size-bump));
+      font-weight: 900;
+      text-align: center;
+      letter-spacing: -0.02em;
+    }
+    .about-studio a {
+      color: #000;
+      text-decoration: none;
+      border-bottom: 2px solid #FFD600;
+    }
+    .about-studio a:hover { background: #FFD600; }
+    .about-version {
+      font-size: calc(9px + var(--size-bump));
+      font-weight: 700;
+      color: #ccc;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    /* Guide */
+    .guide-section { /* flat — no box */ }
+    .guide-label {
+      font-size: calc(8px + var(--size-bump));
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #aaa;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #e8e8e8;
+    }
+    .guide-steps {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      counter-reset: step;
+    }
+    .guide-steps li {
+      counter-increment: step;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 6px 0;
+      border-bottom: 1px solid #f0f0f0;
+      font-size: calc(10px + var(--size-bump));
+      font-weight: 600;
+      line-height: 1.5;
+      color: #222;
+      text-align: left;
+    }
+    .guide-steps li:last-child { border-bottom: none; }
+    .guide-steps li::before {
+      content: counter(step);
+      font-size: calc(8px + var(--size-bump));
+      font-weight: 900;
+      font-family: 'Courier New', monospace;
+      width: 16px;
+      height: 16px;
+      min-width: 16px;
+      background: #FFD600;
+      border: 1.5px solid #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .guide-steps li > span { flex: 1; }
+
+    /* Official site link — complementary */
+    .about-site-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: 2px solid #000;
+      box-shadow: 2px 2px 0 #000;
+      padding: 7px 12px;
+      font-size: calc(10px + var(--size-bump));
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: #000;
+      background: #fff;
+    }
+    .about-site-link:active {
+      box-shadow: none;
+      transform: translate(2px, 2px);
+    }
+
+    /* Credit block */
+    .about-credit {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .about-contact {
+      font-size: calc(9px + var(--size-bump));
+      color: #555;
+    }
+    .about-contact a {
+      color: #000;
+      text-decoration: none;
+      border-bottom: 1.5px solid #000;
+    }
+    .about-contact a:hover { background: #FFD600; }
+
+    /* ── Pro panel ── */
+    .pro-body {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    /* Active state */
+    .pro-active {
+      padding: 24px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .pro-active-card {
+      border: 2px solid #000;
+      box-shadow: 4px 4px 0 #000;
+      padding: 20px 16px;
+      background: #fffdf0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+    .pro-checkmark {
+      font-size: calc(28px + var(--size-bump));
+      line-height: 1;
+    }
+    .pro-active-title {
+      font-size: calc(16px + var(--size-bump));
+      font-weight: 900;
+      text-align: center;
+    }
+    .pro-active-sub {
+      font-size: calc(9px + var(--size-bump));
+      font-weight: 700;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      text-align: center;
+    }
+    .pro-feature-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .pro-feature-list li {
+      padding: 7px 10px;
+      border: 2px solid #000;
+      background: #fff;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .pro-feature-list li::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: #000;
+      flex-shrink: 0;
+      margin-top: 3px;
+    }
+    .pro-feature-name {
+      font-size: calc(10px + var(--size-bump));
+      font-weight: 900;
+      color: #000;
+      display: block;
+      line-height: 1.3;
+    }
+    .pro-feature-desc {
+      font-size: calc(9px + var(--size-bump));
+      font-weight: 600;
+      color: #888;
+      display: block;
+      line-height: 1.4;
+      margin-top: 1px;
+    }
+    .pro-active-email {
+      font-size: calc(9px + var(--size-bump));
+      font-weight: 700;
+      color: #888;
+      text-align: center;
+      font-style: italic;
+      min-height: 1em;
+    }
+    .pro-deactivate-btn {
+      background: transparent;
+      border: none;
+      font-family: 'Courier New', monospace;
+      font-size: calc(9px + var(--size-bump));
+      font-weight: 700;
+      color: #bbb;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      text-align: center;
+      padding: 4px;
+      text-decoration: underline;
+    }
+    .pro-deactivate-btn:hover { color: #000; }
+
+    /* Upgrade state */
+    .pro-upgrade {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .pro-upgrade-hero {
+      border: 2px solid #000;
+      box-shadow: 4px 4px 0 #000;
+      padding: 16px;
+      background: #fffdf0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .pro-upgrade-title {
+      font-size: calc(17px + var(--size-bump));
+      font-weight: 900;
+      letter-spacing: -0.02em;
+    }
+    .pro-upgrade-title span {
+      background: #000;
+      color: #FFD600;
+      padding: 0 4px;
+    }
+    .pro-price-tag {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 6px;
+      background: #000;
+      color: #FFD600;
+      padding: 5px 10px;
+      align-self: flex-start;
+    }
+    .pro-price-amount {
+      font-size: calc(20px + var(--size-bump));
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      line-height: 1;
+    }
+    .pro-price-label {
+      font-size: calc(8px + var(--size-bump));
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      line-height: 1.3;
+    }
+    .pro-upgrade-features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .pro-upgrade-features li {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+    }
+    .pro-upgrade-features li::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: #FFD600;
+      border: 1.5px solid #000;
+      flex-shrink: 0;
+      margin-top: 3px;
+    }
+    .pro-get-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      background: #FFD600;
+      border: 2px solid #000;
+      box-shadow: 3px 3px 0 #000;
+      padding: 11px 12px;
+      font-family: 'Courier New', monospace;
+      font-size: calc(11px + var(--size-bump));
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      text-align: center;
+      text-decoration: none;
+      color: #000;
+      cursor: pointer;
+    }
+    .pro-get-btn:active {
+      box-shadow: none;
+      transform: translate(3px, 3px);
+    }
+    .pro-divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: calc(9px + var(--size-bump));
+      font-weight: 700;
+      color: #aaa;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .pro-divider::before,
+    .pro-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #ddd;
+    }
+    .pro-key-row {
+      display: flex;
+      gap: 6px;
+    }
+    .pro-key-input {
+      flex: 1;
+      border: 2px solid #000;
+      padding: 7px 8px;
+      font-family: 'Courier New', monospace;
+      font-size: calc(10px + var(--size-bump));
+      font-weight: 700;
+      background: #fff;
+      outline: none;
+      letter-spacing: 0.04em;
+    }
+    .pro-key-input::placeholder { color: #bbb; }
+    .pro-key-input:focus { box-shadow: 2px 2px 0 #000; }
+    .pro-activate-btn {
+      background: #000;
+      color: #FFD600;
+      border: 2px solid #000;
+      padding: 7px 12px;
+      font-family: 'Courier New', monospace;
+      font-size: calc(10px + var(--size-bump));
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .pro-activate-btn:active { opacity: 0.7; }
+    .pro-activate-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .pro-key-hint {
+      font-size: calc(9px + var(--size-bump));
+      font-weight: 600;
+      color: #aaa;
+      line-height: 1.5;
+    }
+    .pro-key-error {
+      font-size: calc(9px + var(--size-bump));
+      font-weight: 800;
+      color: #c00;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      display: none;
+    }
+    .pro-key-error.show { display: block; }
+
+    /* ── Icons ── */
+    .icon {
+      width: 1em;
+      height: 1em;
+      vertical-align: -0.15em;
+      flex-shrink: 0;
+    }
+    .pro-checkmark .icon {
+      width: 36px;
+      height: 36px;
+      vertical-align: 0;
+    }
+    #btn-download-bulk {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+    #btn-download-selected {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-left">
+      <span class="title">GetSVG</span>
+      <span class="count-inline" id="count">&nbsp;(Scanning…)</span>
+    </div>
+    <div class="header-right">
+      <button class="pro-badge-btn inactive" id="btn-pro" title="Pro features">Get PRO</button>
+      <button class="header-icon-btn" id="btn-about" title="About">?</button>
+    </div>
+  </div>
+
+  <!-- Normal action bar -->
+  <div class="action-bar" id="action-bar-normal">
+    <button class="action-btn" id="btn-highlight">Highlight All</button>
+    <button class="action-btn is-locked" id="btn-download-bulk">Download Bulk</button>
+  </div>
+
+  <!-- Selection-mode action bar -->
+  <div class="action-bar" id="action-bar-select" style="display:none">
+    <button class="action-btn" id="btn-download-selected" disabled>Download (0)</button>
+    <button class="action-btn ghost" id="btn-cancel-select">Cancel</button>
+  </div>
+
+  <!-- Bulk options dropdown -->
+  <div class="bulk-dropdown" id="bulk-dropdown">
+    <button class="bulk-option" id="bulk-opt-all"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg> Download All</button>
+    <button class="bulk-option" id="bulk-opt-select"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="m9 12 2 2 4-4"/></svg> Manual Selection</button>
+  </div>
+
+  <div class="pro-bar" id="pro-bar">
+    <label class="optimize-label" for="chk-optimize">
+      <input type="checkbox" id="chk-optimize">
+      Optimize SVGs (SVGO)
+      <span class="pro-bar-tag" id="pro-bar-tag">PRO</span>
+    </label>
+  </div>
+
+  <div class="list" id="list">
+    <div class="state-msg">Scanning page…</div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <!-- About panel -->
+  <div class="slide-view" id="about-view">
+    <div class="slide-header">
+      <button class="slide-back-btn" id="btn-about-back"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg></button>
+      <span class="slide-title">About</span>
+    </div>
+    <div class="about-body">
+      <div class="about-logo">
+        <img src="./logo-lockup.svg" alt="GetSVG – SVG Grabber for the Web" />
+      </div>
+      <div class="guide-section">
+        <div class="guide-label">Quick Start Guide</div>
+        <ol class="guide-steps">
+          <li><span>Click the extension icon — GetSVG auto-scans the page</span></li>
+          <li><span>Click COPY or SAVE on any detected SVG</span></li>
+          <li><span>RIGHT-CLICK any SVG on the page for a quick context menu</span></li>
+          <li><span>HIGHLIGHT ALL shows every SVG's position on the page</span></li>
+          <li><span>LOCATE scrolls the page to a specific SVG</span></li>
+        </ol>
+      </div>
+      <a class="about-site-link" href="https://getsvg.xyz" target="_blank">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></svg>
+        getsvg.xyz
+      </a>
+      <div class="about-divider"></div>
+      <div class="about-credit">
+        <div class="about-desc">We build tools for designers &amp; developers who care about craft. GetSVG is free to use — help us keep building, <a href="https://juniorlabdev.gumroad.com/l/getsvg_pro" target="_blank">donate</a>.</div>
+        <div class="about-made-by">Built by</div>
+        <div class="about-studio"><a href="https://adaui.id" target="_blank">ADAUI Studio</a></div>
+        <div class="about-contact">
+          <a href="https://www.adaui.id" target="_blank">www.adaui.id</a>
+          &nbsp;·&nbsp;
+          <a href="mailto:hello@adaui.id">hello@adaui.id</a>
+        </div>
+      </div>
+      <div class="about-version" id="about-version">v1.0.0</div>
+    </div>
+  </div>
+
+  <!-- Pro panel -->
+  <div class="slide-view" id="pro-view">
+    <div class="slide-header">
+      <button class="slide-back-btn" id="btn-pro-back"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg></button>
+      <span class="slide-title">Pro</span>
+    </div>
+    <div class="pro-body">
+
+      <!-- Shown when Pro is active -->
+      <div class="pro-active" id="pro-active-state" style="display:none">
+        <div class="pro-active-card">
+          <div class="pro-checkmark"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg></div>
+          <div class="pro-active-title">Pro Active</div>
+          <div class="pro-active-sub">Thanks for supporting GetSVG!</div>
+          <div class="pro-active-email" id="pro-active-email"></div>
+        </div>
+        <ul class="pro-feature-list">
+          <li>
+            <span>
+              <span class="pro-feature-name">Download Bulk as ZIP</span>
+              <span class="pro-feature-desc">Grab every SVG on the page at once — packed into a single ZIP file.</span>
+            </span>
+          </li>
+          <li>
+            <span>
+              <span class="pro-feature-name">Copy as Data URI</span>
+              <span class="pro-feature-desc">Copy SVG as a base64 string — embed it directly in CSS or HTML, no separate file needed.</span>
+            </span>
+          </li>
+          <li>
+            <span>
+              <span class="pro-feature-name">Optimize with SVGO</span>
+              <span class="pro-feature-desc">Auto-compress SVGs before copying or downloading — smaller and cleaner.</span>
+            </span>
+          </li>
+        </ul>
+        <button class="pro-deactivate-btn" id="btn-deactivate">Deactivate Pro</button>
+      </div>
+
+      <!-- Shown when not Pro -->
+      <div class="pro-upgrade" id="pro-upgrade-state">
+        <div class="pro-upgrade-hero">
+          <div class="pro-upgrade-title">Unlock<span>Pro</span></div>
+          <div class="pro-price-tag">
+            <span class="pro-price-amount">$3+</span>
+            <span class="pro-price-label">one-time<br>donation</span>
+          </div>
+          <ul class="pro-upgrade-features">
+            <li>
+              <span>
+                <span class="pro-feature-name">Download Bulk as ZIP</span>
+                <span class="pro-feature-desc">Grab all SVGs at once in a single ZIP file.</span>
+              </span>
+            </li>
+            <li>
+              <span>
+                <span class="pro-feature-name">Copy as Data URI</span>
+                <span class="pro-feature-desc">Use SVGs directly in CSS/HTML — no separate file needed.</span>
+              </span>
+            </li>
+            <li>
+              <span>
+                <span class="pro-feature-name">Optimize with SVGO</span>
+                <span class="pro-feature-desc">Auto-compress SVGs before saving — smaller and cleaner.</span>
+              </span>
+            </li>
+          </ul>
+        </div>
+        <a class="pro-get-btn" href="https://juniorlabdev.gumroad.com/l/getsvg_pro" target="_blank" id="btn-get-pro">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          Donate $3+ to Unlock
+        </a>
+        <div class="pro-divider">Already donated?</div>
+        <div class="pro-key-row">
+          <input
+            class="pro-key-input"
+            type="text"
+            id="pro-key-input"
+            placeholder="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <button class="pro-activate-btn" id="btn-activate">Unlock</button>
+        </div>
+        <div class="pro-key-error" id="pro-key-error"></div>
+        <div class="pro-key-hint">Enter the license key from your Gumroad purchase email.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <script type="module" src="./index.ts"></script>
+</body>
+</html>
