@@ -28,6 +28,9 @@ const btnProBack = document.getElementById('btn-pro-back') as HTMLButtonElement
 const proActiveState = document.getElementById('pro-active-state') as HTMLElement
 const proUpgradeState = document.getElementById('pro-upgrade-state') as HTMLElement
 const btnDeactivate = document.getElementById('btn-deactivate') as HTMLButtonElement
+const deactivateConfirm = document.getElementById('deactivate-confirm') as HTMLElement
+const btnDeactivateConfirm = document.getElementById('btn-deactivate-confirm') as HTMLButtonElement
+const btnDeactivateCancel = document.getElementById('btn-deactivate-cancel') as HTMLButtonElement
 const proKeyInput = document.getElementById('pro-key-input') as HTMLInputElement
 const btnActivate = document.getElementById('btn-activate') as HTMLButtonElement
 const proKeyError = document.getElementById('pro-key-error') as HTMLElement
@@ -655,7 +658,12 @@ proKeyInput.addEventListener('keydown', (e) => {
   proKeyError.classList.remove('show')
 })
 
-btnDeactivate.addEventListener('click', () => deactivatePro())
+btnDeactivate.addEventListener('click', () => deactivateConfirm.classList.add('open'))
+btnDeactivateCancel.addEventListener('click', () => deactivateConfirm.classList.remove('open'))
+btnDeactivateConfirm.addEventListener('click', async () => {
+  deactivateConfirm.classList.remove('open')
+  await deactivatePro()
+})
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
