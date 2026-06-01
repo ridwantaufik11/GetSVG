@@ -2,7 +2,6 @@
 // https://app.gumroad.com/products/<product_id>/edit
 export const GUMROAD_PRODUCT_ID = 'punwlg'
 
-// Internal keys for team testing — bypass Gumroad API
 const DEV_KEYS: Record<string, string> = {
   'GETSVG-DEV-RIDWAN': 'ridwan@getsvg',
   'GETSVG-DEV-ARMA': 'arma@getsvg',

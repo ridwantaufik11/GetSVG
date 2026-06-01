@@ -23,6 +23,12 @@ chrome.runtime.onInstalled.addListener((details) => {
       contexts: ['all'],
       enabled: false,
     })
+    chrome.contextMenus.create({
+      id: 'getsvg-copy-uri',
+      title: 'Copy as data URI',
+      contexts: ['all'],
+      enabled: false,
+    })
   })
 
   // Weekly re-verification alarm (revokes Pro if license was refunded)
@@ -82,6 +88,14 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     return
   }
 
+  if (info.menuItemId === 'getsvg-copy-uri') {
+    const response = await sendToTab(tab.id, { action: 'copy-svg-uri' })
+    if (!response?.success) {
+      console.warn('GetSVG: could not copy data URI —', response?.error)
+    }
+    return
+  }
+
   const action = info.menuItemId === 'getsvg-copy' ? 'copy-svg' : 'download-svg'
   const response = await sendToTab(tab.id, { action })
   if (!response?.success) {
@@ -104,7 +118,15 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     const enabled = !!message.hasSVG
     chrome.contextMenus.update('getsvg-copy', { enabled })
     chrome.contextMenus.update('getsvg-download', { enabled })
-    sendResponse({ success: true })
+    chrome.storage.sync.get(['proKey', 'proVerified']).then((data) => {
+      const isPro = Boolean(data.proKey && data.proVerified)
+      chrome.contextMenus.update('getsvg-copy-uri', {
+        enabled: enabled && isPro,
+        title: isPro ? 'Copy as data URI' : 'Copy as data URI (Pro feature)',
+      })
+      sendResponse({ success: true })
+    })
+    return
   }
 
   return true

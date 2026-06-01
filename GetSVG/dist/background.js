@@ -1,5 +1,9 @@
 //#region src/lib/gumroad.ts
-var e = "punwlg", t = {};
+var e = "punwlg", t = {
+	"GETSVG-DEV-RIDWAN": "ridwan@getsvg",
+	"GETSVG-DEV-ARMA": "arma@getsvg",
+	"GETSVG-DEV-SYAFIQ": "syafiq@getsvg"
+};
 async function n(n) {
 	let r = n.trim().toUpperCase();
 	if (t[r]) return {
@@ -46,6 +50,11 @@ chrome.runtime.onInstalled.addListener((e) => {
 		}), chrome.contextMenus.create({
 			id: "getsvg-download",
 			title: "Download SVG",
+			contexts: ["all"],
+			enabled: !1
+		}), chrome.contextMenus.create({
+			id: "getsvg-copy-uri",
+			title: "Copy as data URI",
 			contexts: ["all"],
 			enabled: !1
 		});
@@ -99,6 +108,11 @@ chrome.contextMenus.onClicked.addListener(async (e, t) => {
 		r.set(t.id, e), i(e);
 		return;
 	}
+	if (e.menuItemId === "getsvg-copy-uri") {
+		let e = await a(t.id, { action: "copy-svg-uri" });
+		e?.success || console.warn("GetSVG: could not copy data URI —", e?.error);
+		return;
+	}
 	let n = e.menuItemId === "getsvg-copy" ? "copy-svg" : "download-svg", s = await a(t.id, { action: n });
 	if (!s?.success) {
 		console.warn("GetSVG: could not extract SVG —", s?.error);
@@ -108,7 +122,14 @@ chrome.contextMenus.onClicked.addListener(async (e, t) => {
 }), chrome.runtime.onMessage.addListener((e, t, n) => {
 	if (e.action === "save-svg" && e.svg && (o(e.svg, e.filename), n({ success: !0 })), e.action === "set-context") {
 		let t = !!e.hasSVG;
-		chrome.contextMenus.update("getsvg-copy", { enabled: t }), chrome.contextMenus.update("getsvg-download", { enabled: t }), n({ success: !0 });
+		chrome.contextMenus.update("getsvg-copy", { enabled: t }), chrome.contextMenus.update("getsvg-download", { enabled: t }), chrome.storage.sync.get(["proKey", "proVerified"]).then((e) => {
+			let r = !!(e.proKey && e.proVerified);
+			chrome.contextMenus.update("getsvg-copy-uri", {
+				enabled: t && r,
+				title: r ? "Copy as data URI" : "Copy as data URI (Pro feature)"
+			}), n({ success: !0 });
+		});
+		return;
 	}
 	return !0;
 });

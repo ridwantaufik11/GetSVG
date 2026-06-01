@@ -626,8 +626,7 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
         return
       }
       if (message.action === 'copy-svg') {
-        navigator.clipboard
-          .writeText(result.svg)
+        writeClipboard(result.svg)
           .then(() => {
             showPageToast('SVG Copied!')
             pulseElement(el)
@@ -637,6 +636,30 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
       } else {
         sendResponse({ success: true, svg: result.svg, filename: result.filename })
       }
+    })
+    return true
+  }
+
+  if (message.action === 'copy-svg-uri') {
+    const el = lastRightClicked
+    if (!el) {
+      sendResponse({ success: false, error: 'No element right-clicked' })
+      return true
+    }
+    extractSVG(el).then((result) => {
+      if (!result) {
+        sendResponse({ success: false, error: 'No SVG found at right-clicked element' })
+        return
+      }
+      const base64 = btoa(unescape(encodeURIComponent(result.svg)))
+      const dataUri = `data:image/svg+xml;base64,${base64}`
+      writeClipboard(dataUri)
+        .then(() => {
+          showPageToast('Data URI Copied!')
+          pulseElement(el)
+          sendResponse({ success: true })
+        })
+        .catch((err) => sendResponse({ success: false, error: String(err) }))
     })
     return true
   }
