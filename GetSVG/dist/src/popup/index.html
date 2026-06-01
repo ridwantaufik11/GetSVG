@@ -13,6 +13,7 @@
       min-height: 420px;
       max-height: 520px;
       font-family: 'Courier New', monospace;
+      word-spacing: -0.3em;
       background: #fff;
       display: flex;
       flex-direction: column;
@@ -961,6 +962,100 @@
     }
     .deactivate-btn-yes:active { opacity: 0.7; }
 
+    /* ── Onboarding overlay ── */
+    .onboarding-overlay {
+      position: absolute;
+      inset: 0;
+      background: #fff;
+      z-index: 500;
+      display: flex;
+      flex-direction: column;
+    }
+    .onboarding-overlay.hidden { display: none; }
+    .onboarding-top {
+      background: #FFD600;
+      border-bottom: 2px solid #000;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .onboarding-brand-icon {
+      width: 28px;
+      height: 28px;
+      border: 2px solid #000;
+      border-radius: 6px;
+      overflow: hidden;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff;
+    }
+    .onboarding-brand-icon img { width: 100%; height: 100%; object-fit: contain; }
+    .onboarding-brand-name {
+      font-size: calc(15px + var(--size-bump));
+      font-weight: 900;
+      letter-spacing: -0.01em;
+    }
+    .onboarding-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 14px 16px 14px;
+      gap: 10px;
+      overflow-y: auto;
+    }
+    .onboarding-headline {
+      font-size: calc(15px + var(--size-bump));
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      text-align: center;
+      line-height: 1.2;
+    }
+    .onboarding-sub {
+      font-size: calc(10px + var(--size-bump));
+      font-weight: 600;
+      color: #555;
+      text-align: center;
+      line-height: 1.6;
+    }
+    .onboarding-sub strong { color: #000; font-weight: 900; }
+    .onboarding-illustration {
+      width: 100%;
+      height: 158px;
+      border: 2px solid #000;
+      display: block;
+      object-fit: cover;
+      object-position: center;
+    }
+    .onboarding-btn {
+      width: 100%;
+      background: #000;
+      color: #FFD600;
+      border: 2px solid #000;
+      box-shadow: 3px 3px 0 #FFD600;
+      padding: 10px;
+      font-family: 'Courier New', monospace;
+      font-size: calc(11px + var(--size-bump));
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      margin-top: auto;
+    }
+    .onboarding-btn:active {
+      box-shadow: none;
+      transform: translate(3px, 3px);
+    }
+    .onboarding-btn:hover {
+      background: #FFD600;
+      color: #000;
+      box-shadow: 3px 3px 0 #000;
+    }
+
     /* ── Icons ── */
     .icon {
       width: 1em;
@@ -1054,7 +1149,7 @@
       </div>
       <a class="about-site-link" href="https://getsvg.xyz" target="_blank">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></svg>
-        getsvg.xyz
+        VISIT WEB. GETSVG.XYZ
       </a>
       <div class="about-divider"></div>
       <div class="about-credit">
@@ -1171,6 +1266,25 @@
         <div class="pro-key-hint">Enter the license key from your Gumroad purchase email.</div>
       </div>
 
+    </div>
+  </div>
+
+  <!-- Onboarding overlay (first-install only) -->
+  <div class="onboarding-overlay hidden" id="onboarding-overlay">
+    <div class="onboarding-top">
+      <div class="onboarding-brand-icon">
+        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAIAAADYYG7QAAAABmJLR0QA/wD/AP+gvaeTAAAEvUlEQVRYhe2YfUxTVxiHn7ZSGAxcBRRmqlP8WDWg1YGKXziDCqhzc2idETUZUzHzI9NkmhnZJpFEs6ALbFYMc7h0DsUM3TIqi5WojeIyB44R5MM5iHQWRGRDvtr9wZVarHJJbslM/P313nPfc86Tc9/7nvcceK5nTLJua/82Jox1+3xf55F9+mkOA7qtyeOJCnc7UOEvvTjI3Y7grM7OXhz6G8hm78VhgMvWfVkYL0lPA1Tc6sXBNVBpJQVm6WnEqL8/Wa9yvULdigrvj1/PVISpSDTQ7iS3A5EhGuhRPWjl6PfkX6T+HkP8ma5lXAh3GlgRi0zWe3eREgtUZ2VeIiU3HC05+YIx0Je4WZIBiQ3qhB0CjbcXY1/BU+l4dbNWMhqxQDUWzpoB5k6l9hxlZ2i6zLplUnL0DaipWTCmhPKSL4DSg5RNeHkCjBomJZCoGBo1jCH+WOrZm0lZNbPDmaFFq+FCNrfvMH+6lECiVkjpQdqHyGTY7eQWsHkvk5cRHEW6gfGjpKQRCwToYvj5CHOnonjYw1JP1ikidFT+1e9ANhuFV9FqKMjkrhnjYZKThGrOepc9h6QEEhVDadl8sI+wMVw7ia8P0dOInsZH65nwFr9XUGBGnwMgkxGiZk4EMhktrfxwnoZ7AAoFmpFETpQO6HoFQHE5W1LZtZ4AFTYbJ4xCBqqxsO5jh/OxVFYu5P0UjuQ6DWL6itmvSQRkf1hVHfyGdAOBg2i4R1u7C0+5nEEDAQJUTu1KD1R+YqYSF0NdmUYuB+i0UWcVaORytq2h+JQwWVAAN43EzARI3Uq+Xug+J4KqfMLGiAIStULb1/LqCCJChcKtuhaFHE0IyxegGQmw9k0+O0qdlRt/og4SehVeFYytCQwdLIpGLJDSg6XRAOog12kwSUdaNjYb6QZenwLQ1k7mSYDhLxPbl61XmooxRE30NIC8c9RYAHLysdQLrIq+TCJZCbtxBUBHp5AC0g0AnkrWLAGw2bj4K/ocDhzjhJE6Ky2tQlLooT4UaE9X3CxGDKW6lkPfETcL828AuhgGD+KsmQ2fOCV0hRxfH1paufJtz2CXbIXkct6LB/i7Ad12oXHDcnILiF3fc3vptNF4n9Y2rpQ8No5UQMC7S4WCpCthThpHcCCrd9LRidKDnYlcNlCaR+4BR4Z8/CAr2ScDAlTEz3PcJWxaSVo2zf8C6JNZ/YbQ3rWNqOfS3uHIEd2S+FzWFdqAyo/4+fx0AWD0cBIWO7kN8edMBll7WDCj5whSrhAwJYyUzTQ1o9Xg7cWt2wCTx7k4lsyLdD2CxEDAzkSH3d4B4O0lPBaXs/cw1kbh0duL0NEkb3Qz0KPyVNLWLoQR8OmXnDA6OeSdI9p5qRxAhh+5XCzYJeXSAKmDKK2kuBy7HZmMhMX8UUXLA9rahYQeOZFJGkxXXAF1ZVhptXA2pZWUVZOiZ0cii6JYFAVwrQzt2wCrFuPr49TFvZ9syyq+OM79f9j1OVmn0GoIUFHfyPmiJ3ZxL1BwIMf3o9tOUzNVNVTVOL319WF4cP8CATEzKTuNPgfjJa5X0NTMC56EjuGdONYuwe/FfgcCggPZnST2WudZu0EzFUGG2yFMT47x5/r/6z8ZKGy0Ny6CdAAAAABJRU5ErkJggg==" alt="GetSVG" />
+      </div>
+      <span class="onboarding-brand-name">GetSVG</span>
+    </div>
+    <div class="onboarding-body">
+      <div class="onboarding-headline">Pin GetSVG to access it later</div>
+      <img class="onboarding-illustration" src="/assets/extension-image.png" alt="How to pin GetSVG in Chrome" />
+      <p class="onboarding-sub">
+        Click the <strong>puzzle piece</strong> icon in your toolbar,<br>
+        then click the <strong>pin icon</strong> next to GetSVG.
+      </p>
+      <button class="onboarding-btn" id="btn-onboarding-done">Got it!</button>
     </div>
   </div>
 

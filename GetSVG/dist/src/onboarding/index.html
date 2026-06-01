@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Welcome to GetSVG</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --yellow: #FFD600;
+      --black: #000;
+      --white: #fff;
+      --border: 2px solid #000;
+      --shadow: 5px 5px 0 #000;
+    }
+
+    body {
+      font-family: 'Courier New', monospace;
+      word-spacing: -0.3em;
+      background: var(--white);
+      color: var(--black);
+    }
+
+    h1, h2, h3, .btn, .section-label {
+      word-spacing: -0.3em;
+    }
+
+    /* ── Nav ── */
+    .nav {
+      background: var(--yellow);
+      border-bottom: var(--border);
+      padding: 14px 40px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .nav-icon {
+      width: 30px;
+      height: 30px;
+      border: 2px solid #000;
+      border-radius: 7px;
+      overflow: hidden;
+      background: #fff;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .nav-icon img { width: 100%; height: 100%; object-fit: contain; }
+    .nav-name { font-size: 16px; font-weight: 900; letter-spacing: -0.02em; }
+
+    /* ── Section wrapper ── */
+    .section {
+      padding: 72px 40px;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      display: inline-block;
+      background: var(--yellow);
+      border: var(--border);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 900;
+      letter-spacing: -1px;
+      line-height: 1.05;
+      margin-bottom: 12px;
+    }
+
+    .section-sub {
+      font-size: 1rem;
+      color: #555;
+      max-width: 520px;
+      margin-bottom: 40px;
+      line-height: 1.7;
+      font-weight: 700;
+    }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Courier New', monospace;
+      font-weight: 900;
+      font-size: 13px;
+      padding: 14px 28px;
+      border: var(--border);
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 0.08s, box-shadow 0.08s;
+      white-space: nowrap;
+      word-spacing: -0.3em;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      background: none;
+    }
+    .btn:active { transform: translate(3px, 3px); }
+
+    .btn-primary {
+      background: var(--black);
+      color: var(--yellow);
+      box-shadow: var(--shadow);
+    }
+    .btn-primary:hover { transform: translate(2px, 2px); box-shadow: 3px 3px 0 #000; }
+    .btn-primary:active { box-shadow: 2px 2px 0 #000; }
+
+    .btn-outline {
+      background: var(--white);
+      color: var(--black);
+      box-shadow: var(--shadow);
+    }
+    .btn-outline:hover { transform: translate(2px, 2px); box-shadow: 3px 3px 0 #000; }
+    .btn-outline:active { box-shadow: 2px 2px 0 #000; }
+
+    .btn-pro {
+      background: var(--yellow);
+      color: var(--black);
+      border-color: var(--yellow);
+      box-shadow: 5px 5px 0 #555;
+    }
+    .btn-pro:hover { transform: translate(2px, 2px); box-shadow: 3px 3px 0 #555; }
+    .btn-pro:active { box-shadow: 2px 2px 0 #555; }
+
+    /* ── 1. Welcome ── */
+    .welcome-section { border-bottom: var(--border); background: var(--black); }
+    .welcome-section .section { padding-bottom: 40px; }
+    .welcome-section .section-label { background: transparent; border-color: #333; color: #666; }
+    .welcome-section .section-title { color: var(--yellow); }
+    .welcome-section .section-sub { color: #aaa; }
+
+    /* ── 2. How to use ── */
+    .howto-section {
+      border-bottom: var(--border);
+      background: #fafafa;
+    }
+    .steps { border-top: var(--border); }
+    .step-item {
+      display: grid;
+      grid-template-columns: 52px 1fr;
+      gap: 24px;
+      align-items: flex-start;
+      padding: 24px 0;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    .step-item:last-child { border-bottom: var(--border); }
+    .step-num {
+      width: 40px;
+      height: 40px;
+      background: var(--yellow);
+      border: var(--border);
+      font-size: 16px;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 3px;
+    }
+    .step-content h3 {
+      font-size: 17px;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      margin-bottom: 5px;
+    }
+    .step-content p {
+      font-size: 13px;
+      color: #555;
+      line-height: 1.7;
+      font-weight: 700;
+    }
+
+    /* ── 3. Get Pro ── */
+    .pro-wrapper {
+      background: var(--black);
+      border-bottom: var(--border);
+    }
+    .pro-wrapper .section-label {
+      background: transparent;
+      border-color: #333;
+      color: #666;
+    }
+    .pro-wrapper .section-title { color: var(--yellow); }
+    .pro-wrapper .section-sub { color: #aaa; }
+
+    .pro-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border: 2px solid #333;
+      margin-bottom: 36px;
+    }
+    .pro-feature {
+      padding: 24px;
+      border-right: 1px solid #333;
+    }
+    .pro-feature:last-child { border-right: none; }
+    .pro-arrow { font-size: 20px; color: var(--yellow); font-weight: 900; margin-bottom: 10px; }
+    .pro-feature h3 {
+      font-size: 14px;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: -0.01em;
+      margin-bottom: 6px;
+    }
+    .pro-feature p { font-size: 12px; color: #888; line-height: 1.6; font-weight: 700; }
+
+    .pro-cta-row {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .pro-price { display: flex; align-items: baseline; gap: 8px; }
+    .pro-price-amount {
+      font-size: 34px;
+      font-weight: 900;
+      color: var(--yellow);
+      letter-spacing: -0.03em;
+    }
+    .pro-price-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #555;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    /* ── 4. Support ── */
+    .support-wrapper {
+      background: #f5f5f5;
+      border-bottom: var(--border);
+    }
+    .support-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+    /* ── Footer ── */
+    .footer {
+      background: var(--yellow);
+      border-top: var(--border);
+      padding: 24px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .footer-msg { font-size: 13px; font-weight: 700; }
+
+    @media (max-width: 600px) {
+      .section { padding: 48px 20px; }
+      .nav { padding: 14px 20px; }
+      .pro-grid { grid-template-columns: 1fr; }
+      .pro-feature { border-right: none; border-bottom: 1px solid #333; }
+      .pro-feature:last-child { border-bottom: none; }
+      .footer { padding: 20px; flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Nav -->
+  <nav class="nav">
+    <div class="nav-icon">
+      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAIAAADYYG7QAAAABmJLR0QA/wD/AP+gvaeTAAAEvUlEQVRYhe2YfUxTVxiHn7ZSGAxcBRRmqlP8WDWg1YGKXziDCqhzc2idETUZUzHzI9NkmhnZJpFEs6ALbFYMc7h0DsUM3TIqi5WojeIyB44R5MM5iHQWRGRDvtr9wZVarHJJbslM/P313nPfc86Tc9/7nvcceK5nTLJua/82Jox1+3xf55F9+mkOA7qtyeOJCnc7UOEvvTjI3Y7grM7OXhz6G8hm78VhgMvWfVkYL0lPA1Tc6sXBNVBpJQVm6WnEqL8/Wa9yvULdigrvj1/PVISpSDTQ7iS3A5EhGuhRPWjl6PfkX6T+HkP8ma5lXAh3GlgRi0zWe3eREgtUZ2VeIiU3HC05+YIx0Je4WZIBiQ3qhB0CjbcXY1/BU+l4dbNWMhqxQDUWzpoB5k6l9hxlZ2i6zLplUnL0DaipWTCmhPKSL4DSg5RNeHkCjBomJZCoGBo1jCH+WOrZm0lZNbPDmaFFq+FCNrfvMH+6lECiVkjpQdqHyGTY7eQWsHkvk5cRHEW6gfGjpKQRCwToYvj5CHOnonjYw1JP1ikidFT+1e9ANhuFV9FqKMjkrhnjYZKThGrOepc9h6QEEhVDadl8sI+wMVw7ia8P0dOInsZH65nwFr9XUGBGnwMgkxGiZk4EMhktrfxwnoZ7AAoFmpFETpQO6HoFQHE5W1LZtZ4AFTYbJ4xCBqqxsO5jh/OxVFYu5P0UjuQ6DWL6itmvSQRkf1hVHfyGdAOBg2i4R1u7C0+5nEEDAQJUTu1KD1R+YqYSF0NdmUYuB+i0UWcVaORytq2h+JQwWVAAN43EzARI3Uq+Xug+J4KqfMLGiAIStULb1/LqCCJChcKtuhaFHE0IyxegGQmw9k0+O0qdlRt/og4SehVeFYytCQwdLIpGLJDSg6XRAOog12kwSUdaNjYb6QZenwLQ1k7mSYDhLxPbl61XmooxRE30NIC8c9RYAHLysdQLrIq+TCJZCbtxBUBHp5AC0g0AnkrWLAGw2bj4K/ocDhzjhJE6Ky2tQlLooT4UaE9X3CxGDKW6lkPfETcL828AuhgGD+KsmQ2fOCV0hRxfH1paufJtz2CXbIXkct6LB/i7Ad12oXHDcnILiF3fc3vptNF4n9Y2rpQ8No5UQMC7S4WCpCthThpHcCCrd9LRidKDnYlcNlCaR+4BR4Z8/CAr2ScDAlTEz3PcJWxaSVo2zf8C6JNZ/YbQ3rWNqOfS3uHIEd2S+FzWFdqAyo/4+fx0AWD0cBIWO7kN8edMBll7WDCj5whSrhAwJYyUzTQ1o9Xg7cWt2wCTx7k4lsyLdD2CxEDAzkSH3d4B4O0lPBaXs/cw1kbh0duL0NEkb3Qz0KPyVNLWLoQR8OmXnDA6OeSdI9p5qRxAhh+5XCzYJeXSAKmDKK2kuBy7HZmMhMX8UUXLA9rahYQeOZFJGkxXXAF1ZVhptXA2pZWUVZOiZ0cii6JYFAVwrQzt2wCrFuPr49TFvZ9syyq+OM79f9j1OVmn0GoIUFHfyPmiJ3ZxL1BwIMf3o9tOUzNVNVTVOL319WF4cP8CATEzKTuNPgfjJa5X0NTMC56EjuGdONYuwe/FfgcCggPZnST2WudZu0EzFUGG2yFMT47x5/r/6z8ZKGy0Ny6CdAAAAABJRU5ErkJggg==" alt="GetSVG" />
+    </div>
+    <span class="nav-name">GetSVG</span>
+  </nav>
+
+  <!-- 1. Thank you -->
+  <div class="welcome-section">
+    <div class="section">
+      <div class="section-label">Welcome</div>
+      <h1 class="section-title">You're all set.</h1>
+      <p class="section-sub">Thanks for installing GetSVG — grab, copy, and download SVGs from any page, for free.</p>
+    </div>
+  </div>
+
+  <!-- 2. How to use -->
+  <div class="howto-section">
+    <div class="section">
+      <div class="section-label">How to use</div>
+      <h2 class="section-title">Get started in seconds</h2>
+
+      <div class="steps">
+        <div class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <h3>Pin the extension</h3>
+            <p>Click the puzzle icon in Chrome toolbar, then pin GetSVG. Keeps it one click away on every tab.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <h3>Highlight All SVGs</h3>
+            <p>Flash a bright yellow border around every SVG on the page. Toggle it off just as easily. Find hidden icons and assets you didn't know were there.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <h3>Right-click → Copy</h3>
+            <p>Right-click any SVG on the page to instantly copy the clean SVG markup to clipboard. Works on inline SVGs, image tags, and background SVGs.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <h3>Right-click → Save</h3>
+            <p>Download any SVG directly to your filesystem with one click from the context menu. File is cleaned and ready to use.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">5</div>
+          <div class="step-content">
+            <h3>Browse All SVGs in Panel</h3>
+            <p>Open the extension popup to see every SVG on the current page. Copy, download, or locate each one from a clean thumbnail list.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Get Pro -->
+  <div class="pro-wrapper">
+    <div class="section">
+      <div class="section-label">Get Pro</div>
+      <h2 class="section-title">Extended features</h2>
+      <p class="section-sub">Unlock three extra tools with a one-time $3 donation. No subscription, no account.</p>
+
+      <div class="pro-grid">
+        <div class="pro-feature">
+          <div class="pro-arrow">→</div>
+          <h3>Bulk ZIP</h3>
+          <p>Download all SVGs on the page at once — packed into a single ZIP file.</p>
+        </div>
+        <div class="pro-feature">
+          <div class="pro-arrow">→</div>
+          <h3>Data URI</h3>
+          <p>Copy SVG as base64 — embed it directly in CSS or HTML, no file needed.</p>
+        </div>
+        <div class="pro-feature">
+          <div class="pro-arrow">→</div>
+          <h3>SVGO Optimize</h3>
+          <p>Auto-compress SVGs before saving — smaller and cleaner output.</p>
+        </div>
+      </div>
+
+      <div class="pro-cta-row">
+        <div class="pro-price">
+          <span class="pro-price-amount">$3+</span>
+          <span class="pro-price-label">one-time donation</span>
+        </div>
+        <a class="btn btn-pro" href="https://adauistudio.gumroad.com/l/getsvg_pro" target="_blank">Donate $3+ to unlock Pro →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Support -->
+  <div class="support-wrapper">
+    <div class="section">
+      <div class="section-label">Support the project</div>
+      <h2 class="section-title">Help us keep building</h2>
+      <p class="section-sub">GetSVG is free to use. If it saves you time, a quick review or small donation means a lot.</p>
+      <div class="support-actions">
+        <a class="btn btn-outline" href="https://chromewebstore.google.com/detail/getsvg/njgbeplaphkhgfiaekffiocpblaangmp" target="_blank">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          Rate on Chrome Web Store
+        </a>
+        <a class="btn btn-outline" href="https://adauistudio.gumroad.com/l/getsvg_pro" target="_blank">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          Donate
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <span class="footer-msg">Built by ADAUI Studio — tools for designers &amp; developers who care about craft.</span>
+    <button class="btn btn-primary" id="btn-close">Close this tab →</button>
+  </footer>
+
+  <script>
+    document.getElementById('btn-close').addEventListener('click', () => window.close())
+  </script>
+</body>
+</html>

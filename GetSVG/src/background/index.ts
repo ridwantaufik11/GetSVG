@@ -1,7 +1,16 @@
 import { verifyLicenseKey } from '../lib/gumroad'
 
-chrome.runtime.onInstalled.addListener(() => {
+chrome.runtime.onInstalled.addListener((details) => {
+  if (details.reason === 'install') {
+    chrome.tabs.create({ url: chrome.runtime.getURL('src/onboarding/index.html') })
+  }
+
   chrome.contextMenus.removeAll(() => {
+    chrome.contextMenus.create({
+      id: 'getsvg-highlight',
+      title: 'Highlight all SVGs',
+      contexts: ['all'],
+    })
     chrome.contextMenus.create({
       id: 'getsvg-copy',
       title: 'Copy SVG',
@@ -13,11 +22,6 @@ chrome.runtime.onInstalled.addListener(() => {
       title: 'Download SVG',
       contexts: ['all'],
       enabled: false,
-    })
-    chrome.contextMenus.create({
-      id: 'getsvg-highlight',
-      title: 'Highlight all SVGs',
-      contexts: ['all'],
     })
   })
 

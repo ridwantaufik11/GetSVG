@@ -5,6 +5,7 @@
   "description": "Right-click any SVG to copy or download it instantly. Highlights all SVGs on the page at once.",
   "permissions": [
     "activeTab",
+    "alarms",
     "contextMenus",
     "downloads",
     "scripting",

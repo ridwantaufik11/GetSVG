@@ -1,26 +1,26 @@
 //#region src/lib/gumroad.ts
-var e = "YOUR_GUMROAD_PRODUCT_ID";
-async function t(t) {
+var e = "punwlg", t = {};
+async function n(n) {
+	let r = n.trim().toUpperCase();
+	if (t[r]) return {
+		valid: !0,
+		email: t[r]
+	};
 	try {
-		let n = new URLSearchParams({
+		let t = new URLSearchParams({
 			product_id: e,
-			license_key: t.trim(),
+			license_key: n.trim(),
 			increment_uses_count: "false"
-		}), r = await fetch("https://api.gumroad.com/v2/licenses/verify", {
+		}), r = await (await fetch("https://api.gumroad.com/v2/licenses/verify", {
 			method: "POST",
-			body: n
-		});
-		if (!r.ok) return {
-			valid: !1,
-			error: "network"
-		};
-		let i = await r.json();
-		return i.success ? i.purchase?.refunded || i.purchase?.chargebacked ? {
+			body: t
+		})).json();
+		return r.success ? r.purchase?.refunded || r.purchase?.chargebacked ? {
 			valid: !1,
 			error: "refunded"
 		} : {
 			valid: !0,
-			email: i.purchase?.email
+			email: r.purchase?.email
 		} : {
 			valid: !1,
 			error: "invalid"
@@ -32,9 +32,13 @@ async function t(t) {
 		};
 	}
 }
-chrome.runtime.onInstalled.addListener(() => {
-	chrome.contextMenus.removeAll(() => {
+chrome.runtime.onInstalled.addListener((e) => {
+	e.reason === "install" && chrome.tabs.create({ url: chrome.runtime.getURL("src/onboarding/index.html") }), chrome.contextMenus.removeAll(() => {
 		chrome.contextMenus.create({
+			id: "getsvg-highlight",
+			title: "Highlight all SVGs",
+			contexts: ["all"]
+		}), chrome.contextMenus.create({
 			id: "getsvg-copy",
 			title: "Copy SVG",
 			contexts: ["all"],
@@ -44,33 +48,29 @@ chrome.runtime.onInstalled.addListener(() => {
 			title: "Download SVG",
 			contexts: ["all"],
 			enabled: !1
-		}), chrome.contextMenus.create({
-			id: "getsvg-highlight",
-			title: "Highlight all SVGs",
-			contexts: ["all"]
 		});
 	}), chrome.alarms.create("pro-reverify", { periodInMinutes: 1440 * 7 });
 }), chrome.alarms.onAlarm.addListener(async (e) => {
 	if (e.name !== "pro-reverify") return;
-	let n = await chrome.storage.sync.get(["proKey", "proVerified"]);
-	if (!n.proKey || !n.proVerified) return;
-	let r = await t(n.proKey);
+	let t = await chrome.storage.sync.get(["proKey", "proVerified"]);
+	if (!t.proKey || !t.proVerified) return;
+	let r = await n(t.proKey);
 	!r.valid && r.error !== "network" && await chrome.storage.sync.remove([
 		"proKey",
 		"proVerified",
 		"proEmail"
 	]);
 });
-var n = /* @__PURE__ */ new Map();
-function r(e) {
+var r = /* @__PURE__ */ new Map();
+function i(e) {
 	chrome.contextMenus.update("getsvg-highlight", { title: e ? "Hide Highlights" : "Highlight all SVGs" });
 }
 chrome.tabs.onActivated.addListener(({ tabId: e }) => {
-	r(n.get(e) ?? !1);
+	i(r.get(e) ?? !1);
 }), chrome.tabs.onRemoved.addListener((e) => {
-	n.delete(e);
+	r.delete(e);
 });
-async function i(e, t) {
+async function a(e, t) {
 	return new Promise((n) => {
 		chrome.tabs.sendMessage(e, t, (r) => {
 			if (!chrome.runtime.lastError) {
@@ -95,24 +95,24 @@ async function i(e, t) {
 chrome.contextMenus.onClicked.addListener(async (e, t) => {
 	if (!t?.id) return;
 	if (e.menuItemId === "getsvg-highlight") {
-		let e = (await i(t.id, { action: "toggle-highlight" }))?.active ?? !1;
-		n.set(t.id, e), r(e);
+		let e = (await a(t.id, { action: "toggle-highlight" }))?.active ?? !1;
+		r.set(t.id, e), i(e);
 		return;
 	}
-	let o = e.menuItemId === "getsvg-copy" ? "copy-svg" : "download-svg", s = await i(t.id, { action: o });
+	let n = e.menuItemId === "getsvg-copy" ? "copy-svg" : "download-svg", s = await a(t.id, { action: n });
 	if (!s?.success) {
 		console.warn("GetSVG: could not extract SVG —", s?.error);
 		return;
 	}
-	o === "download-svg" && s.svg && a(s.svg, s.filename);
+	n === "download-svg" && s.svg && o(s.svg, s.filename);
 }), chrome.runtime.onMessage.addListener((e, t, n) => {
-	if (e.action === "save-svg" && e.svg && (a(e.svg, e.filename), n({ success: !0 })), e.action === "set-context") {
+	if (e.action === "save-svg" && e.svg && (o(e.svg, e.filename), n({ success: !0 })), e.action === "set-context") {
 		let t = !!e.hasSVG;
 		chrome.contextMenus.update("getsvg-copy", { enabled: t }), chrome.contextMenus.update("getsvg-download", { enabled: t }), n({ success: !0 });
 	}
 	return !0;
 });
-function a(e, t = "image.svg") {
+function o(e, t = "image.svg") {
 	let n = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(e);
 	chrome.downloads.download({
 		url: n,
