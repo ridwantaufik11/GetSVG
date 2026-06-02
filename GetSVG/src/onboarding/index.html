@@ -4,6 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Welcome to GetSVG</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -16,13 +19,14 @@
     }
 
     body {
-      font-family: 'Courier New', monospace;
-      word-spacing: -0.3em;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-weight: 400;
       background: var(--white);
       color: var(--black);
     }
 
-    h1, h2, h3, .btn, .section-label {
+    h1, h2, h3, .btn, .section-label, .nav-name {
+      font-family: 'Courier New', monospace;
       word-spacing: -0.3em;
     }
 
@@ -83,7 +87,6 @@
       max-width: 520px;
       margin-bottom: 40px;
       line-height: 1.7;
-      font-weight: 700;
     }
 
     /* ── Buttons ── */
@@ -174,10 +177,9 @@
       margin-bottom: 5px;
     }
     .step-content p {
-      font-size: 13px;
+      font-size: 14px;
       color: #555;
       line-height: 1.7;
-      font-weight: 700;
     }
 
     /* ── 3. Get Pro ── */
@@ -206,13 +208,13 @@
     .pro-feature:last-child { border-right: none; }
     .pro-arrow { font-size: 20px; color: var(--yellow); font-weight: 900; margin-bottom: 10px; }
     .pro-feature h3 {
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 900;
       color: #fff;
       letter-spacing: -0.01em;
       margin-bottom: 6px;
     }
-    .pro-feature p { font-size: 12px; color: #888; line-height: 1.6; font-weight: 700; }
+    .pro-feature p { font-size: 14px; color: #888; line-height: 1.6; }
 
     .pro-cta-row {
       display: flex;
@@ -309,22 +311,22 @@
         <div class="step-item">
           <div class="step-num">2</div>
           <div class="step-content">
-            <h3>Highlight All SVGs</h3>
-            <p>Flash a bright yellow border around every SVG on the page. Toggle it off just as easily. Find hidden icons and assets you didn't know were there.</p>
+            <h3>Right-click any SVG</h3>
+            <p>Right-click directly on any SVG to copy its markup, download the file, or grab its Data URI — all from the context menu. Works on inline SVGs, image tags, and background SVGs.</p>
           </div>
         </div>
         <div class="step-item">
           <div class="step-num">3</div>
           <div class="step-content">
-            <h3>Right-click → Copy</h3>
-            <p>Right-click any SVG on the page to instantly copy the clean SVG markup to clipboard. Works on inline SVGs, image tags, and background SVGs.</p>
+            <h3>Highlight All SVGs</h3>
+            <p>Not sure where the SVGs are? Use Highlight All to flash a yellow border around every SVG on the page at once. Find hidden icons and assets you didn't know were there.</p>
           </div>
         </div>
         <div class="step-item">
           <div class="step-num">4</div>
           <div class="step-content">
-            <h3>Right-click → Save</h3>
-            <p>Download any SVG directly to your filesystem with one click from the context menu. File is cleaned and ready to use.</p>
+            <h3>Click a highlighted element</h3>
+            <p>Some SVGs sit beneath invisible layers or look indistinguishable from PNGs. After highlighting, click any outlined element — copy and save buttons appear right on the surface, no guesswork needed.</p>
           </div>
         </div>
         <div class="step-item">

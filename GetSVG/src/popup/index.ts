@@ -224,14 +224,24 @@ async function init() {
   }
   activeTabId = tab.id
 
+  const detectSVGs = (tabId: number): Promise<any> =>
+    new Promise((resolve, reject) => {
+      const timer = setTimeout(() => reject(new Error('timeout')), 8_000)
+      chrome.tabs.sendMessage(tabId, { action: 'detect-svgs' }, (res) => {
+        clearTimeout(timer)
+        if (chrome.runtime.lastError) reject(new Error(chrome.runtime.lastError.message))
+        else resolve(res)
+      })
+    })
+
   let res: any = null
   try {
-    res = await chrome.tabs.sendMessage(tab.id, { action: 'detect-svgs' })
+    res = await detectSVGs(tab.id)
   } catch {
     // Content script not yet running on this tab — inject it and retry once.
     try {
       await chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ['content.js'] })
-      res = await chrome.tabs.sendMessage(tab.id, { action: 'detect-svgs' })
+      res = await detectSVGs(tab.id)
     } catch {
       showState('Cannot scan this page.', 'Browser internal pages are not supported.')
       return
