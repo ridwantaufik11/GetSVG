@@ -498,6 +498,14 @@ function showActionPopup(
   uriBtn.textContent = 'Data URI'
   uriBtn.addEventListener('click', async (e) => {
     e.stopPropagation()
+    const data = await chrome.storage.sync.get(['proKey', 'proVerified'])
+    const isPro = Boolean(data.proKey && data.proVerified)
+    if (!isPro) {
+      removePopups(shadow)
+      showPageToast('Get Pro to enable Copy as Data URI')
+      chrome.runtime.sendMessage({ action: 'open-pro-popup' })
+      return
+    }
     try {
       const r = await extractSVG(el)
       if (!r) { removePopups(shadow); showPageToast('Copy failed!'); return }
@@ -638,6 +646,12 @@ function locateElement(el: Element): void {
 // ─── Message Handler ──────────────────────────────────────────────────────────
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+  if (message.action === 'show-pro-toast') {
+    showPageToast('Get Pro to enable Copy as Data URI')
+    sendResponse({ success: true })
+    return true
+  }
+
   if (message.action === 'copy-svg' || message.action === 'download-svg') {
     const el = lastRightClicked
     if (!el) {

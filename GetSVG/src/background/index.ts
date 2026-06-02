@@ -89,6 +89,14 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   }
 
   if (info.menuItemId === 'getsvg-copy-uri') {
+    const data = await chrome.storage.sync.get(['proKey', 'proVerified'])
+    const isPro = Boolean(data.proKey && data.proVerified)
+    if (!isPro) {
+      await sendToTab(tab.id, { action: 'show-pro-toast' })
+      await chrome.storage.local.set({ pendingProView: true })
+      chrome.action.openPopup?.()
+      return
+    }
     const response = await sendToTab(tab.id, { action: 'copy-svg-uri' })
     if (!response?.success) {
       console.warn('GetSVG: could not copy data URI —', response?.error)
@@ -114,18 +122,20 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     sendResponse({ success: true })
   }
 
+  if (message.action === 'open-pro-popup') {
+    chrome.storage.local.set({ pendingProView: true }).then(() => {
+      chrome.action.openPopup?.()
+      sendResponse({ success: true })
+    })
+    return true
+  }
+
   if (message.action === 'set-context') {
     const enabled = !!message.hasSVG
     chrome.contextMenus.update('getsvg-copy', { enabled })
     chrome.contextMenus.update('getsvg-download', { enabled })
-    chrome.storage.sync.get(['proKey', 'proVerified']).then((data) => {
-      const isPro = Boolean(data.proKey && data.proVerified)
-      chrome.contextMenus.update('getsvg-copy-uri', {
-        enabled: enabled && isPro,
-        title: isPro ? 'Copy as data URI' : 'Copy as data URI (Pro feature)',
-      })
-      sendResponse({ success: true })
-    })
+    chrome.contextMenus.update('getsvg-copy-uri', { enabled })
+    sendResponse({ success: true })
     return
   }
 

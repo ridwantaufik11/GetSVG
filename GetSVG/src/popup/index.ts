@@ -95,11 +95,16 @@ async function loadProStatus() {
     proActiveEmail.textContent = ''
   }
 
-  const localData = await chrome.storage.local.get(['optimizeEnabled'])
+  const localData = await chrome.storage.local.get(['optimizeEnabled', 'pendingProView'])
   optimizeEnabled = isPro && Boolean(localData.optimizeEnabled)
   chkOptimize.checked = optimizeEnabled
 
   applyProUI()
+
+  if (localData.pendingProView && !isPro) {
+    await chrome.storage.local.remove('pendingProView')
+    openProView()
+  }
 }
 
 function applyProUI() {
