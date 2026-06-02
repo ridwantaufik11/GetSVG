@@ -5,6 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="icon" type="image/png" href="/logo.png" />
   <title>GetSVG — SVG Grabber & Downloader for Chrome</title>
+  <meta name="description" content="Right-click to copy or save any SVG from any website. Highlight all SVGs on a page, browse every asset in a clean panel — free Chrome extension." />
+  <!-- OpenGraph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://getsvg.app" />
+  <meta property="og:site_name" content="GetSVG" />
+  <meta property="og:title" content="GetSVG — SVG Grabber & Downloader for Chrome" />
+  <meta property="og:description" content="Right-click to copy or save any SVG from any website. Highlight all SVGs on a page, browse every asset in a clean panel — free Chrome extension." />
+  <meta property="og:image" content="https://getsvg.app/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="GetSVG — SVG Grabber & Downloader for Chrome" />
+  <meta name="twitter:description" content="Right-click to copy or save any SVG from any website. Highlight all SVGs on a page, browse every asset in a clean panel — free Chrome extension." />
+  <meta name="twitter:image" content="https://getsvg.app/og-image.png" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -1012,7 +1027,6 @@
               </div>
             </div>
           </div>
-          <div class="feature-media-label">Screenshot Placeholder — Highlight All / Hide</div>
         </div>
         <div class="feature-info">
           <h3>Highlight All SVGs</h3>
@@ -1035,6 +1049,10 @@
               <!-- context menu -->
               <div class="ctx-menu">
                 <div class="ctx-item" style="background:#eee; color:#888; font-size:10px;">svg.check-icon</div>
+                <div class="ctx-item">
+                  <div class="ctx-dot" style="background:#fff;"></div>
+                  Highlight All SVGs
+                </div>
                 <div class="ctx-item active">
                   <div class="ctx-dot"></div>
                   Copy SVG
@@ -1043,14 +1061,9 @@
                   <div class="ctx-dot" style="background:#fff;"></div>
                   Download SVG
                 </div>
-                <div class="ctx-item">
-                  <div class="ctx-dot" style="background:#fff;"></div>
-                  Highlight All SVGs
-                </div>
               </div>
             </div>
           </div>
-          <div class="feature-media-label">Screenshot Placeholder — Right Click Copy</div>
         </div>
         <div class="feature-info">
           <h3>Right-click &rarr; Copy</h3>
@@ -1073,20 +1086,19 @@
                 <div class="ctx-item" style="background:#eee; color:#888; font-size:10px;">svg.logo-icon</div>
                 <div class="ctx-item">
                   <div class="ctx-dot" style="background:#fff;"></div>
+                  Highlight All SVGs
+                </div>
+                <div class="ctx-item">
+                  <div class="ctx-dot" style="background:#fff;"></div>
                   Copy SVG
                 </div>
                 <div class="ctx-item active">
                   <div class="ctx-dot"></div>
                   Download SVG
                 </div>
-                <div class="ctx-item">
-                  <div class="ctx-dot" style="background:#fff;"></div>
-                  Highlight All SVGs
-                </div>
               </div>
             </div>
           </div>
-          <div class="feature-media-label">Screenshot Placeholder — Right Click Save</div>
         </div>
         <div class="feature-info">
           <h3>Right-click &rarr; Save</h3>
@@ -1139,7 +1151,6 @@
               <div style="padding:5px 10px; font-size:9px; color:#888; font-weight:700; text-align:center;">+ 4 more</div>
             </div>
           </div>
-          <div class="feature-media-label">Screenshot Placeholder — SVG Panel List</div>
         </div>
         <div class="feature-info">
           <h3>Browse All SVGs in Panel</h3>
@@ -1218,9 +1229,30 @@
         <div class="step-num">1</div>
         <h3>Install from Chrome Web Store</h3>
         <p>Click "Add to Chrome" — it's free. No permissions beyond the current tab.</p>
-        <div class="step-visual">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Add to Chrome
+        <div class="step-visual" style="padding:0; overflow:hidden;">
+          <!-- Illustration: Browser page with Add to Chrome button -->
+          <svg viewBox="0 0 280 80" width="100%" height="80" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Browser window -->
+            <rect x="12" y="8" width="152" height="64" fill="white" stroke="black" stroke-width="2"/>
+            <!-- Title bar -->
+            <rect x="12" y="8" width="152" height="17" fill="#EBEBEB" stroke="black" stroke-width="2"/>
+            <!-- Traffic dots -->
+            <circle cx="23" cy="16.5" r="3.5" fill="#C8C8C8"/>
+            <circle cx="34" cy="16.5" r="3.5" fill="#C8C8C8"/>
+            <circle cx="45" cy="16.5" r="3.5" fill="#C8C8C8"/>
+            <!-- URL bar -->
+            <rect x="56" y="11" width="100" height="11" rx="2" fill="white" stroke="#C8C8C8" stroke-width="1"/>
+            <!-- Page content lines -->
+            <rect x="20" y="33" width="100" height="8" rx="1" fill="#E8E8E8"/>
+            <rect x="20" y="46" width="72" height="6" rx="1" fill="#F0F0F0"/>
+            <rect x="20" y="57" width="88" height="6" rx="1" fill="#F0F0F0"/>
+            <!-- Add to Chrome button (yellow) -->
+            <rect x="182" y="26" width="80" height="28" fill="#FFD400" stroke="black" stroke-width="2.5"/>
+            <text x="222" y="44" font-size="12" text-anchor="middle" fill="black" font-weight="900" font-family="'Courier New', monospace">+ ADD</text>
+            <!-- Arrow from browser to button -->
+            <path d="M167 40 L179 40" stroke="black" stroke-width="2" stroke-dasharray="3 2"/>
+            <polygon points="178,36.5 184,40 178,43.5" fill="black"/>
+          </svg>
         </div>
         <div class="step-arrow">→</div>
       </div>
@@ -1229,9 +1261,30 @@
         <div class="step-num">2</div>
         <h3>Pin the Extension</h3>
         <p>Click the puzzle icon in your Chrome toolbar, find GetSVG, and pin it for quick access.</p>
-        <div class="step-visual">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-          Pin to Toolbar
+        <div class="step-visual" style="padding:0; overflow:hidden;">
+          <!-- Illustration: Chrome toolbar with extensions menu + pin -->
+          <svg viewBox="0 0 280 80" width="100%" height="80" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Toolbar strip -->
+            <rect x="12" y="8" width="256" height="20" fill="#EBEBEB" stroke="black" stroke-width="2"/>
+            <!-- URL bar in toolbar -->
+            <rect x="20" y="12" width="160" height="12" rx="2" fill="white" stroke="#C8C8C8" stroke-width="1"/>
+            <!-- Puzzle/extensions icon in toolbar -->
+            <rect x="196" y="11" width="18" height="14" rx="2" fill="white" stroke="#888" stroke-width="1.5"/>
+            <path d="M200 14 h4 a2 2 0 0 1 0 4 v2 h6 v-2 a2 2 0 0 1 0-4 v-2 h-4 a1 1 0 0 0-1-1h-2 a1 1 0 0 0-1 1z" fill="#888"/>
+            <!-- Extensions dropdown panel -->
+            <rect x="170" y="32" width="110" height="44" fill="white" stroke="black" stroke-width="2"/>
+            <!-- Extension row 1 (GetSVG, highlighted) -->
+            <rect x="170" y="32" width="110" height="20" fill="#FFD400" stroke="black" stroke-width="2"/>
+            <!-- Puzzle icon small -->
+            <rect x="177" y="37" width="10" height="10" rx="1" fill="black"/>
+            <text x="193" y="46" font-size="9" fill="black" font-weight="900" font-family="'Courier New', monospace">GetSVG</text>
+            <!-- Pin icon -->
+            <line x1="263" y1="38" x2="263" y2="50" stroke="black" stroke-width="2" stroke-linecap="round"/>
+            <line x1="259" y1="38" x2="267" y2="38" stroke="black" stroke-width="2" stroke-linecap="round"/>
+            <!-- Extension row 2 (muted) -->
+            <rect x="177" y="57" width="10" height="10" rx="1" fill="#D0D0D0"/>
+            <text x="193" y="66" font-size="9" fill="#AAA" font-family="'Courier New', monospace">Other ext...</text>
+          </svg>
         </div>
         <div class="step-arrow">→</div>
       </div>
@@ -1240,9 +1293,33 @@
         <div class="step-num">3</div>
         <h3>Use It Anywhere</h3>
         <p>Right-click any SVG on any site, or open the panel to browse all SVGs on the page.</p>
-        <div class="step-visual">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-          Done!
+        <div class="step-visual" style="padding:0; overflow:hidden;">
+          <!-- Illustration: SVG element with right-click context menu -->
+          <svg viewBox="0 0 280 80" width="100%" height="80" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Page background -->
+            <rect x="12" y="8" width="140" height="64" fill="white" stroke="black" stroke-width="2"/>
+            <!-- Page content lines -->
+            <rect x="20" y="16" width="90" height="6" rx="1" fill="#E8E8E8"/>
+            <rect x="20" y="27" width="65" height="5" rx="1" fill="#F0F0F0"/>
+            <!-- SVG element on page (highlighted yellow = selected) -->
+            <rect x="20" y="38" width="48" height="28" fill="#FFF9C4" stroke="#FFD400" stroke-width="2" stroke-dasharray="4 2"/>
+            <!-- Simple SVG icon inside -->
+            <circle cx="44" cy="52" r="9" fill="none" stroke="#FFD400" stroke-width="2"/>
+            <path d="M40 52 l3 3 l6-6" stroke="#FFD400" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- Right-click cursor dot -->
+            <circle cx="68" cy="60" r="3" fill="black"/>
+            <!-- Context menu -->
+            <rect x="76" y="32" width="108" height="46" fill="white" stroke="black" stroke-width="2"/>
+            <!-- Label -->
+            <rect x="76" y="32" width="108" height="14" fill="#EBEBEB" stroke="black" stroke-width="2"/>
+            <text x="130" y="43" font-size="7.5" text-anchor="middle" fill="#777" font-family="'Courier New', monospace">svg.logo-icon</text>
+            <!-- Menu items -->
+            <text x="88" y="57" font-size="8.5" fill="black" font-weight="700" font-family="'Courier New', monospace">Highlight All SVGs</text>
+            <line x1="76" y1="62" x2="184" y2="62" stroke="#E0E0E0" stroke-width="1"/>
+            <!-- Active item: Copy SVG -->
+            <rect x="76" y="62" width="108" height="16" fill="#FFD400"/>
+            <text x="88" y="74" font-size="8.5" fill="black" font-weight="900" font-family="'Courier New', monospace">Copy SVG</text>
+          </svg>
         </div>
       </div>
 
