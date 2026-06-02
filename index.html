@@ -986,15 +986,48 @@
 
     <div class="features-grid">
 
-      <!-- Feature 1: Highlight all / hide -->
+      <!-- Feature 1: Right-click actions (Copy, Save, URI) -->
+      <div class="feature-card">
+        <div class="feature-media">
+          <div class="feature-media-inner">
+            <div style="position:relative; display:flex; align-items:flex-start; gap:12px;">
+              <div style="width:80px; height:100px; background:#fff; border:1.5px solid #555; padding:6px; flex-shrink:0;">
+                <div style="width:100%; height:14px; background:#e0e0e0; margin-bottom:5px;"></div>
+                <div style="width:50px; height:56px; background:#f0f0f0; border:1px solid #ccc; margin:0 auto; display:flex; align-items:center; justify-content:center;">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#FFD400" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-5"/></svg>
+                </div>
+              </div>
+              <div class="ctx-menu">
+                <div class="ctx-item" style="background:#eee; color:#888; font-size:10px;">svg.check-icon</div>
+                <div class="ctx-item active">
+                  <div class="ctx-dot"></div>
+                  Copy SVG
+                </div>
+                <div class="ctx-item">
+                  <div class="ctx-dot" style="background:#fff;"></div>
+                  Download SVG
+                </div>
+                <div class="ctx-item">
+                  <div class="ctx-dot" style="background:#fff;"></div>
+                  Copy as Data URI
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="feature-info">
+          <h3>Right-click &rarr; Copy, Save, or URI</h3>
+          <p>Right-click any SVG on the page to instantly copy, download, or grab its Data URI — straight from the context menu. Works on inline SVGs, image tags, and background SVGs.</p>
+        </div>
+      </div>
+
+      <!-- Feature 2: Highlight All SVGs - discoverability -->
       <div class="feature-card">
         <div class="feature-media">
           <div class="feature-media-inner">
             <div class="highlight-scene">
               <div class="hl-page">
-                <!-- nav blocks -->
                 <div class="hl-block" style="width:100%; height:10px;"></div>
-                <!-- content area -->
                 <div style="display:flex; gap:6px; width:100%;">
                   <div class="hl-block" style="width:32px; height:32px; position:relative;">
                     <div class="hl-overlay" style="inset:-3px; border-color:#FFD400;">
@@ -1034,75 +1067,39 @@
         </div>
       </div>
 
-      <!-- Feature 2: Right-click copy -->
+      <!-- Feature 3: Click highlighted element for precision -->
       <div class="feature-card">
         <div class="feature-media">
           <div class="feature-media-inner">
-            <div style="position:relative; display:flex; align-items:flex-start; gap:12px;">
-              <!-- "webpage" background hint -->
-              <div style="width:80px; height:90px; background:#fff; border:1.5px solid #555; padding:6px; flex-shrink:0;">
-                <div style="width:100%; height:14px; background:#e0e0e0; margin-bottom:5px;"></div>
-                <div style="width:50px; height:50px; background:#f0f0f0; border:1px solid #ccc; margin:0 auto; display:flex; align-items:center; justify-content:center;">
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#FFD400" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-5"/></svg>
-                </div>
-              </div>
-              <!-- context menu -->
-              <div class="ctx-menu">
-                <div class="ctx-item" style="background:#eee; color:#888; font-size:10px;">svg.check-icon</div>
-                <div class="ctx-item">
-                  <div class="ctx-dot" style="background:#fff;"></div>
-                  Highlight All SVGs
-                </div>
-                <div class="ctx-item active">
-                  <div class="ctx-dot"></div>
-                  Copy SVG
-                </div>
-                <div class="ctx-item">
-                  <div class="ctx-dot" style="background:#fff;"></div>
-                  Download SVG
+            <div class="highlight-scene" style="height:145px;">
+              <div class="hl-page" style="overflow:visible;">
+                <div class="hl-block" style="width:100%; height:10px;"></div>
+                <div style="display:flex; gap:8px; width:100%; margin-top:6px; align-items:flex-start;">
+                  <!-- Plain block — looks like an image, could be PNG -->
+                  <div class="hl-block" style="width:36px; height:36px;"></div>
+                  <!-- SVG highlighted + clicked → buttons appear -->
+                  <div style="width:44px; height:44px; background:#f0f0f0; border:2.5px solid #FFD400; box-shadow:0 0 0 2px rgba(255,212,0,0.25); position:relative; flex-shrink:0;">
+                    <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFD400" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>
+                    </div>
+                    <!-- invisible layer on top (dashed) -->
+                    <div style="position:absolute; inset:0; border:1.5px dashed rgba(180,180,180,0.6);"></div>
+                    <!-- action buttons surfaced on click -->
+                    <div style="position:absolute; bottom:-24px; left:-4px; right:-4px; display:flex; gap:2px;">
+                      <div style="flex:2; background:#FFD400; border:1.5px solid #000; font-size:6px; font-weight:900; text-align:center; padding:3px 1px; white-space:nowrap;">COPY</div>
+                      <div style="flex:1; background:#fff; border:1.5px solid #000; font-size:6px; font-weight:900; text-align:center; padding:3px 1px;">SAVE</div>
+                    </div>
+                  </div>
+                  <!-- Another plain block -->
+                  <div class="hl-block" style="width:36px; height:36px;"></div>
                 </div>
               </div>
             </div>
           </div>
         </div>
         <div class="feature-info">
-          <h3>Right-click &rarr; Copy</h3>
-          <p>Right-click any SVG on the page to instantly copy the clean SVG markup to clipboard. Works on inline SVGs, image tags, and background SVGs.</p>
-        </div>
-      </div>
-
-      <!-- Feature 3: Right-click save -->
-      <div class="feature-card">
-        <div class="feature-media">
-          <div class="feature-media-inner">
-            <div style="position:relative; display:flex; align-items:flex-start; gap:12px;">
-              <div style="width:80px; height:90px; background:#fff; border:1.5px solid #555; padding:6px; flex-shrink:0;">
-                <div style="width:100%; height:14px; background:#e0e0e0; margin-bottom:5px;"></div>
-                <div style="width:50px; height:50px; background:#f0f0f0; border:1px solid #ccc; margin:0 auto; display:flex; align-items:center; justify-content:center;">
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#FFD400" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
-                </div>
-              </div>
-              <div class="ctx-menu">
-                <div class="ctx-item" style="background:#eee; color:#888; font-size:10px;">svg.logo-icon</div>
-                <div class="ctx-item">
-                  <div class="ctx-dot" style="background:#fff;"></div>
-                  Highlight All SVGs
-                </div>
-                <div class="ctx-item">
-                  <div class="ctx-dot" style="background:#fff;"></div>
-                  Copy SVG
-                </div>
-                <div class="ctx-item active">
-                  <div class="ctx-dot"></div>
-                  Download SVG
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="feature-info">
-          <h3>Right-click &rarr; Save</h3>
-          <p>Download any SVG directly to your filesystem with one click from the context menu. File is cleaned and ready to use.</p>
+          <h3>Click Highlighted Element</h3>
+          <p>Not every SVG is easy to spot — a graphic can look like a PNG, or sit beneath an invisible layer that blocks your click. After highlighting, click any outlined element to surface copy and save actions directly. No guesswork, no missed targets.</p>
         </div>
       </div>
 
@@ -1167,7 +1164,7 @@
   <div class="pro-inner">
     <div class="section-label">Pro Features</div>
     <h2 class="section-title">Power tools for<br />power users.</h2>
-    <p class="section-sub">Unlock three extra features with a one-time $3 donation. No subscription, no account.</p>
+    <p class="section-sub">Unlock three extra features with a one-time $5 donation. No subscription, no account.</p>
 
     <div class="pro-grid">
 
@@ -1203,7 +1200,7 @@
     <div class="pro-cta-row">
       <div>
         <div class="pro-price">
-          <span class="amount">$3</span>
+          <span class="amount">$5</span>
           <span class="period">one-time</span>
         </div>
         <p class="pro-note">Pay once. Yours forever. No server, no account.</p>
@@ -1294,7 +1291,7 @@
       <div class="step">
         <div class="step-num">3</div>
         <h3>Use It Anywhere</h3>
-        <p>Right-click any SVG on any site, or open the panel to browse all SVGs on the page.</p>
+        <p>All features are available on any webpage you visit — right-click directly on the page, or open the extension panel from your toolbar.</p>
         <div class="step-visual" style="padding:0; overflow:hidden; background:#000;">
           <!-- Illustration: SVG element with right-click context menu -->
           <svg viewBox="0 0 280 80" width="100%" height="80" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1377,7 +1374,7 @@
 <section id="support" class="support-section">
   <div class="support-inner">
     <div class="section-label" style="margin-bottom:20px;">Support the Project</div>
-    <h2>GetSVG is free.<br />Pro is $3.</h2>
+    <h2>GetSVG is free.<br />Pro is $5.</h2>
     <p>A one-time donation unlocks Pro features and keeps this tool alive and maintained. No subscription. No account. Just a receipt code that activates Pro locally.</p>
 
     <div class="support-actions">

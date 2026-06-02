@@ -303,6 +303,7 @@ const HIGHLIGHT_STYLES = `
     display: flex;
     gap: 6px;
     z-index: 20;
+    pointer-events: auto;
   }
   .btn {
     background: #FFD600;
@@ -466,31 +467,62 @@ function showActionPopup(
     e.stopPropagation()
     try {
       const r = await extractSVG(el)
-      if (!r) return
+      if (!r) { removePopups(shadow); showPageToast('Copy failed!'); return }
       await writeClipboard(r.svg)
       removePopups(shadow)
-      showFeedback(shadow, overlay, 'Copied!')
+      showPageToast('SVG Copied!')
     } catch {
       removePopups(shadow)
-      showFeedback(shadow, overlay, 'Copy failed')
+      showPageToast('Copy failed!')
     }
   })
 
   const dlBtn = document.createElement('button')
   dlBtn.className = 'btn ghost'
-  dlBtn.textContent = 'Download'
+  dlBtn.textContent = 'Save'
   dlBtn.addEventListener('click', (e) => {
     e.stopPropagation()
     extractSVG(el).then((r) => {
-      if (!r) return
+      if (!r) { removePopups(shadow); showPageToast('Save failed!'); return }
       chrome.runtime.sendMessage({ action: 'save-svg', svg: r.svg, filename: r.filename })
       removePopups(shadow)
-      showFeedback(shadow, overlay, 'Saved!')
+      showPageToast('SVG Saved!')
+    }).catch(() => {
+      removePopups(shadow)
+      showPageToast('Save failed!')
     })
+  })
+
+  const uriBtn = document.createElement('button')
+  uriBtn.className = 'btn ghost'
+  uriBtn.textContent = 'Data URI'
+  uriBtn.addEventListener('click', async (e) => {
+    e.stopPropagation()
+    const data = await chrome.storage.sync.get(['proKey', 'proVerified'])
+    const isPro = Boolean(data.proKey && data.proVerified)
+    if (!isPro) {
+      removePopups(shadow)
+      showPageToast('Get Pro to enable Copy as Data URI')
+      chrome.runtime.sendMessage({ action: 'open-pro-popup' })
+      return
+    }
+    try {
+      const r = await extractSVG(el)
+      if (!r) { removePopups(shadow); showPageToast('Copy failed!'); return }
+      const base64 = btoa(unescape(encodeURIComponent(r.svg)))
+      const dataUri = `data:image/svg+xml;base64,${base64}`
+      await writeClipboard(dataUri)
+      removePopups(shadow)
+      showPageToast('Data URI Copied!')
+    } catch {
+      removePopups(shadow)
+      showPageToast('Copy failed!')
+    }
   })
 
   popup.appendChild(copyBtn)
   popup.appendChild(dlBtn)
+  popup.appendChild(uriBtn)
   shadow.appendChild(popup)
 
   const { left, top } = popupPosition(overlay)
@@ -614,6 +646,12 @@ function locateElement(el: Element): void {
 // ─── Message Handler ──────────────────────────────────────────────────────────
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+  if (message.action === 'show-pro-toast') {
+    showPageToast('Get Pro to enable Copy as Data URI')
+    sendResponse({ success: true })
+    return true
+  }
+
   if (message.action === 'copy-svg' || message.action === 'download-svg') {
     const el = lastRightClicked
     if (!el) {
@@ -665,7 +703,11 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   }
 
   if (message.action === 'detect-svgs') {
-    sendResponse({ success: true, items: detectAllSVGs() })
+    try {
+      sendResponse({ success: true, items: detectAllSVGs() })
+    } catch (err) {
+      sendResponse({ success: false, error: String(err) })
+    }
     return true
   }
 

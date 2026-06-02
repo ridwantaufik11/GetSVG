@@ -95,11 +95,16 @@ async function loadProStatus() {
     proActiveEmail.textContent = ''
   }
 
-  const localData = await chrome.storage.local.get(['optimizeEnabled'])
+  const localData = await chrome.storage.local.get(['optimizeEnabled', 'pendingProView'])
   optimizeEnabled = isPro && Boolean(localData.optimizeEnabled)
   chkOptimize.checked = optimizeEnabled
 
   applyProUI()
+
+  if (localData.pendingProView && !isPro) {
+    await chrome.storage.local.remove('pendingProView')
+    openProView()
+  }
 }
 
 function applyProUI() {
@@ -224,14 +229,24 @@ async function init() {
   }
   activeTabId = tab.id
 
+  const detectSVGs = (tabId: number): Promise<any> =>
+    new Promise((resolve, reject) => {
+      const timer = setTimeout(() => reject(new Error('timeout')), 8_000)
+      chrome.tabs.sendMessage(tabId, { action: 'detect-svgs' }, (res) => {
+        clearTimeout(timer)
+        if (chrome.runtime.lastError) reject(new Error(chrome.runtime.lastError.message))
+        else resolve(res)
+      })
+    })
+
   let res: any = null
   try {
-    res = await chrome.tabs.sendMessage(tab.id, { action: 'detect-svgs' })
+    res = await detectSVGs(tab.id)
   } catch {
     // Content script not yet running on this tab — inject it and retry once.
     try {
       await chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ['content.js'] })
-      res = await chrome.tabs.sendMessage(tab.id, { action: 'detect-svgs' })
+      res = await detectSVGs(tab.id)
     } catch {
       showState('Cannot scan this page.', 'Browser internal pages are not supported.')
       return

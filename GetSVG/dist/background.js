@@ -109,8 +109,13 @@ chrome.contextMenus.onClicked.addListener(async (e, t) => {
 		return;
 	}
 	if (e.menuItemId === "getsvg-copy-uri") {
-		let e = await a(t.id, { action: "copy-svg-uri" });
-		e?.success || console.warn("GetSVG: could not copy data URI —", e?.error);
+		let e = await chrome.storage.sync.get(["proKey", "proVerified"]);
+		if (!(e.proKey && e.proVerified)) {
+			await a(t.id, { action: "show-pro-toast" }), await chrome.storage.local.set({ pendingProView: !0 }), chrome.action.openPopup?.();
+			return;
+		}
+		let n = await a(t.id, { action: "copy-svg-uri" });
+		n?.success || console.warn("GetSVG: could not copy data URI —", n?.error);
 		return;
 	}
 	let n = e.menuItemId === "getsvg-copy" ? "copy-svg" : "download-svg", s = await a(t.id, { action: n });
@@ -120,15 +125,12 @@ chrome.contextMenus.onClicked.addListener(async (e, t) => {
 	}
 	n === "download-svg" && s.svg && o(s.svg, s.filename);
 }), chrome.runtime.onMessage.addListener((e, t, n) => {
-	if (e.action === "save-svg" && e.svg && (o(e.svg, e.filename), n({ success: !0 })), e.action === "set-context") {
+	if (e.action === "save-svg" && e.svg && (o(e.svg, e.filename), n({ success: !0 })), e.action === "open-pro-popup") return chrome.storage.local.set({ pendingProView: !0 }).then(() => {
+		chrome.action.openPopup?.(), n({ success: !0 });
+	}), !0;
+	if (e.action === "set-context") {
 		let t = !!e.hasSVG;
-		chrome.contextMenus.update("getsvg-copy", { enabled: t }), chrome.contextMenus.update("getsvg-download", { enabled: t }), chrome.storage.sync.get(["proKey", "proVerified"]).then((e) => {
-			let r = !!(e.proKey && e.proVerified);
-			chrome.contextMenus.update("getsvg-copy-uri", {
-				enabled: t && r,
-				title: r ? "Copy as data URI" : "Copy as data URI (Pro feature)"
-			}), n({ success: !0 });
-		});
+		chrome.contextMenus.update("getsvg-copy", { enabled: t }), chrome.contextMenus.update("getsvg-download", { enabled: t }), chrome.contextMenus.update("getsvg-copy-uri", { enabled: t }), n({ success: !0 });
 		return;
 	}
 	return !0;
