@@ -62,7 +62,7 @@ function chromeExtension() {
             name: 'GetSVG - SVG Grabber & Downloader',
             version: '1.0.0',
             description: 'Right-click any SVG to copy or download it instantly. Highlights all SVGs on the page at once.',
-            permissions: ['activeTab', 'contextMenus', 'downloads', 'scripting', 'storage'],
+            permissions: ['activeTab', 'alarms', 'contextMenus', 'downloads', 'scripting', 'storage'],
             host_permissions: ['<all_urls>'],
             background: { service_worker: 'background.js', type: 'module' },
             content_scripts: [{ matches: ['<all_urls>'], js: ['content.js'] }],
@@ -89,7 +89,10 @@ export default defineConfig({
     outDir: resolve(__dirname, 'dist'),
     emptyOutDir: true,
     rollupOptions: {
-      input: { popup: resolve(__dirname, 'src/popup/index.html') },
+      input: {
+          popup: resolve(__dirname, 'src/popup/index.html'),
+          onboarding: resolve(__dirname, 'src/onboarding/index.html'),
+        },
       output: {
         entryFileNames: 'assets/[name].js',
         chunkFileNames: 'assets/[name].js',

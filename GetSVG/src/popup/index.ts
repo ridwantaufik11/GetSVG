@@ -195,9 +195,26 @@ async function maybeOptimize(svg: string): Promise<string> {
   }
 }
 
+// ─── Onboarding ───────────────────────────────────────────────────────────────
+
+const onboardingOverlay = document.getElementById('onboarding-overlay') as HTMLElement
+const btnOnboardingDone = document.getElementById('btn-onboarding-done') as HTMLButtonElement
+
+btnOnboardingDone.addEventListener('click', async () => {
+  await chrome.storage.local.remove('showOnboarding')
+  onboardingOverlay.classList.add('hidden')
+  init()
+})
+
 // ─── Init ─────────────────────────────────────────────────────────────────────
 
 async function init() {
+  const { showOnboarding } = await chrome.storage.local.get('showOnboarding')
+  if (showOnboarding) {
+    onboardingOverlay.classList.remove('hidden')
+    return
+  }
+
   await loadProStatus()
 
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
